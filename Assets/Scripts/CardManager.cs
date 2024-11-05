@@ -38,6 +38,7 @@ public class CardManager : MonoBehaviour
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
 
         GenerateCards();
+        ShuffleCards();
         GiveCardsToPlayer();
     }
 
@@ -82,7 +83,8 @@ public class CardManager : MonoBehaviour
 
     void ShuffleCards()
     {
-
+        var random = new System.Random();
+        _cards = _cards.OrderBy(card => random.NextDouble()).ToArray();
     }
 
     void GiveCardsToPlayer()
