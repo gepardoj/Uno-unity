@@ -1,19 +1,27 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 public class RotateAround : MonoBehaviour
 {
-    [SerializeField] private float _amountOfCircle = 1;
-    void Start()
+    [SerializeField] private float _amountOfCircle = 1; // 1 is full circle, 0.5 is half circle, etc
+    [SerializeField] private bool _lookAtPivot = true;
+    [SerializeField, RequiredMember] private Vector3 _cardStartingRotation;
+    [SerializeField, RequiredMember] private Vector3 _cardStartingPosition;
+    [SerializeField, RequiredMember] private float _cardWidth = 50;
+    [SerializeField, RequiredMember] private float _cardHeight = 100;
+
+    public void PlaceCards()
     {
-        var children = GetComponentsInChildren<RectTransform>();
-        float angle = 360.0f / children.Length * _amountOfCircle;
-        for (var i = 0; i < children.Length; i++)
+        var children = new List<RectTransform>(GetComponentsInChildren<RectTransform>());
+        children.Remove(GetComponent<RectTransform>());
+        float angle = 360.0f / children.Count * _amountOfCircle;
+        for (var i = 0; i < children.Count; i++)
         {
-            children[i].transform.RotateAround(transform.position, Vector3.up, i * angle);
-            children[i].LookAt(transform);
+            children[i].sizeDelta = new Vector2(_cardWidth, _cardHeight);
+            children[i].SetLocalPositionAndRotation(_cardStartingPosition, Quaternion.Euler(_cardStartingRotation));
+            children[i].RotateAround(transform.position, Vector3.up, i * angle);
+            if (_lookAtPivot) children[i].LookAt(transform);
         }
     }
 }

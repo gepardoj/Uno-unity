@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Scripting;
@@ -26,9 +27,17 @@ public class CardManager : MonoBehaviour
     [SerializeField, RequiredMember] private OtherCard[] _otherCardsDef;
 
     [SerializeField, RequiredMember] private Card _cardPrefab;
+    [SerializeField, RequiredMember] private Sprite _closedSprite;
     [SerializeField, RequiredMember] private GameObject _playerCardHolder;
+    [SerializeField, RequiredMember] private GameObject _leftOpponentCardHolder;
+    [SerializeField, RequiredMember] private GameObject _topOpponentCardHolder;
+    [SerializeField, RequiredMember] private GameObject _rightOpponentCardHolder;
 
-    private Card[] _cards;
+    private List<Card> _availableCards;
+    private List<Card> _playerCards;
+    private List<Card> _leftOpponentCards;
+    private List<Card> _topOpponentCards;
+    private List<Card> _rightOpponentCards;
 
     void Start()
     {
@@ -39,12 +48,16 @@ public class CardManager : MonoBehaviour
 
         GenerateCards();
         ShuffleCards();
-        GiveCardsToPlayer();
+        _playerCards = GiveCardsToPlayer(CardState.Opened, _playerCardHolder);
+        _leftOpponentCards = GiveCardsToPlayer(CardState.Closed, _leftOpponentCardHolder);
+        _topOpponentCards = GiveCardsToPlayer(CardState.Closed, _topOpponentCardHolder);
+        _rightOpponentCards = GiveCardsToPlayer(CardState.Closed, _rightOpponentCardHolder);
+        print(_availableCards.Count);
     }
 
     void GenerateCards()
     {
-        _cards = new Card[TOTAL_CARDS_N];
+        _availableCards = new List<Card>();
         int i = 0;
         foreach (SuitColor color in Enum.GetValues(typeof(SuitColor)))
         {
@@ -60,16 +73,15 @@ public class CardManager : MonoBehaviour
         foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAdd(CardType.other, null, null, OtherCards.wild, i++);
         foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAdd(CardType.other, null, null, OtherCards.wilddraw, i++);
 
-        var filledCards = _cards.Where(card => card != null).ToArray().Length;
-        if (_cards == null || filledCards != TOTAL_CARDS_N) throw new Exception($"Total cards should be {TOTAL_CARDS_N}, but found {filledCards}");
+        if (_availableCards == null || _availableCards.Count != TOTAL_CARDS_N) throw new Exception($"Total cards should be {TOTAL_CARDS_N}, but found {_availableCards.Count}");
     }
 
     void CreateAndAdd(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, int index)
     {
         var card = Instantiate(_cardPrefab);
         card.transform.SetParent(transform, false);
-        card.Init(type, color, value, other, GetSpriteInCardsDef(type, color, value, other));
-        _cards[index] = card;
+        card.Init(type, color, value, other, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
+        _availableCards.Add(card);
     }
 
     Sprite GetSpriteInCardsDef(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
@@ -84,16 +96,20 @@ public class CardManager : MonoBehaviour
     void ShuffleCards()
     {
         var random = new System.Random();
-        _cards = _cards.OrderBy(card => random.NextDouble()).ToArray();
+        _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
     }
 
-    void GiveCardsToPlayer()
+    List<Card> GiveCardsToPlayer(CardState state, GameObject cardHolder)
     {
-        var playerCards = _cards[0..CARDS_PER_PLAYER_N];
+        var playerCards = _availableCards.Take(CARDS_PER_PLAYER_N).ToList();
+        _availableCards = _availableCards.Skip(CARDS_PER_PLAYER_N).ToList();
         foreach (var card in playerCards)
         {
-            card.transform.SetParent(_playerCardHolder.transform, false);
+            card.SetStateAndSprite(state, _closedSprite);
+            card.transform.SetParent(cardHolder.transform, false);
         }
+        var rotateAround = cardHolder.GetComponent<RotateAround>();
+        if (rotateAround) rotateAround.PlaceCards();
+        return playerCards;
     }
-
 }
