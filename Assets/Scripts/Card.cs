@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 enum CardState { Closed, Opened }
 
-class Card : MonoBehaviour, ICardDefinition
+class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
 {
     private CardType _type;
     private SuitColor? _color;
@@ -32,6 +33,11 @@ class Card : MonoBehaviour, ICardDefinition
         _sprite = sprite;
         _state = CardState.Closed;
         SetStateAndSprite(_state, closedSprite);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        transform.parent.GetComponent<MyCardsHolder>().OnSelectCard(this);
     }
 
     public void SetStateAndSprite(CardState state, Sprite closedSprite)

@@ -28,16 +28,20 @@ public class CardManager : MonoBehaviour
 
     [SerializeField, RequiredMember] private Card _cardPrefab;
     [SerializeField, RequiredMember] private Sprite _closedSprite;
-    [SerializeField, RequiredMember] private GameObject _playerCardHolder;
-    [SerializeField, RequiredMember] private GameObject _leftOpponentCardHolder;
-    [SerializeField, RequiredMember] private GameObject _topOpponentCardHolder;
-    [SerializeField, RequiredMember] private GameObject _rightOpponentCardHolder;
+    [SerializeField, RequiredMember] private GameObject _playerCardsHolder;
+    [SerializeField, RequiredMember] private GameObject _leftOpponentCardsHolder;
+    [SerializeField, RequiredMember] private GameObject _topOpponentCardsHolder;
+    [SerializeField, RequiredMember] private GameObject _rightOpponentCardsHolder;
+
+    public GameObject dropCardsHolder;
+
 
     private List<Card> _availableCards;
     private List<Card> _playerCards;
     private List<Card> _leftOpponentCards;
     private List<Card> _topOpponentCards;
     private List<Card> _rightOpponentCards;
+    private List<Card> _dropCards;
 
     void Start()
     {
@@ -48,11 +52,11 @@ public class CardManager : MonoBehaviour
 
         GenerateCards();
         ShuffleCards();
-        _playerCards = GiveCardsToPlayer(CardState.Opened, _playerCardHolder);
-        _leftOpponentCards = GiveCardsToPlayer(CardState.Closed, _leftOpponentCardHolder);
-        _topOpponentCards = GiveCardsToPlayer(CardState.Closed, _topOpponentCardHolder);
-        _rightOpponentCards = GiveCardsToPlayer(CardState.Closed, _rightOpponentCardHolder);
-        print(_availableCards.Count);
+        _playerCards = GiveCardsToPlayer(CardState.Opened, _playerCardsHolder);
+        _leftOpponentCards = GiveCardsToPlayer(CardState.Closed, _leftOpponentCardsHolder);
+        _topOpponentCards = GiveCardsToPlayer(CardState.Closed, _topOpponentCardsHolder);
+        _rightOpponentCards = GiveCardsToPlayer(CardState.Closed, _rightOpponentCardsHolder);
+        _dropCards = new List<Card>();
     }
 
     void GenerateCards()
@@ -111,5 +115,12 @@ public class CardManager : MonoBehaviour
         var rotateAround = cardHolder.GetComponent<RotateAround>();
         if (rotateAround) rotateAround.PlaceCards();
         return playerCards;
+    }
+
+    internal void MoveCardToDrop(Card card)
+    {
+        var foundCard = Utils.RemoveAndGetElementFromList(_playerCards, card);
+        _dropCards.Add(foundCard);
+        //print($"player = {_playerCards.Count} drop = {_dropCards.Count}");
     }
 }

@@ -255,8 +255,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 711062260115824483}
   - {fileID: 4898237227678084993}
+  - {fileID: 711062260115824483}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -672,7 +672,6 @@ GameObject:
   - component: {fileID: 711062260115824483}
   - component: {fileID: 4225097147846559097}
   - component: {fileID: 1645404946367052394}
-  - component: {fileID: 1555847578807137831}
   m_Layer: 5
   m_Name: Pivot
   m_TagString: Untagged
@@ -689,7 +688,7 @@ RectTransform:
   m_GameObject: {fileID: 8358477471792609879}
   m_LocalRotation: {x: -0.2724069, y: 0.062626585, z: 0.01178314, w: 0.9600696}
   m_LocalPosition: {x: 0, y: 0, z: 23.88585}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1894372056332547705}
@@ -718,6 +717,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _amountOfCircle: 0.125
+  _lookAtPivot: 1
+  _cardStartingPosition: {x: 0, y: 0, z: 0}
 --- !u!222 &1645404946367052394
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -726,33 +727,3 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8358477471792609879}
   m_CullTransparentMesh: 1
---- !u!114 &1555847578807137831
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8358477471792609879}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1

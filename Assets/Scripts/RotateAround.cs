@@ -6,10 +6,7 @@ public class RotateAround : MonoBehaviour
 {
     [SerializeField] private float _amountOfCircle = 1; // 1 is full circle, 0.5 is half circle, etc
     [SerializeField] private bool _lookAtPivot = true;
-    [SerializeField, RequiredMember] private Vector3 _cardStartingRotation;
     [SerializeField, RequiredMember] private Vector3 _cardStartingPosition;
-    [SerializeField, RequiredMember] private float _cardWidth = 50;
-    [SerializeField, RequiredMember] private float _cardHeight = 100;
 
     public void PlaceCards()
     {
@@ -18,8 +15,7 @@ public class RotateAround : MonoBehaviour
         float angle = 360.0f / children.Count * _amountOfCircle;
         for (var i = 0; i < children.Count; i++)
         {
-            children[i].sizeDelta = new Vector2(_cardWidth, _cardHeight);
-            children[i].SetLocalPositionAndRotation(_cardStartingPosition, Quaternion.Euler(_cardStartingRotation));
+            children[i].SetLocalPositionAndRotation(_cardStartingPosition, Quaternion.Euler(Vector3.zero));
             children[i].RotateAround(transform.position, Vector3.up, i * angle);
             if (_lookAtPivot) children[i].LookAt(transform);
         }
