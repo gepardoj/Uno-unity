@@ -38,6 +38,7 @@ public class CardManager : MonoBehaviour
 
     private List<Card> _availableCards;
     private List<Card> _playerCards;
+    internal List<Card> PlayerCards => _playerCards;
     private List<Card> _leftOpponentCards;
     private List<Card> _topOpponentCards;
     private List<Card> _rightOpponentCards;
@@ -57,6 +58,8 @@ public class CardManager : MonoBehaviour
         _topOpponentCards = GiveCardsToPlayer(CardState.Closed, _topOpponentCardsHolder);
         _rightOpponentCards = GiveCardsToPlayer(CardState.Closed, _rightOpponentCardsHolder);
         _dropCards = new List<Card>();
+        PopupUntilSuitCardAndMove();
+        print($"Available = {_availableCards.Count}");
     }
 
     void GenerateCards()
@@ -106,7 +109,7 @@ public class CardManager : MonoBehaviour
     List<Card> GiveCardsToPlayer(CardState state, GameObject cardHolder)
     {
         var playerCards = _availableCards.Take(CARDS_PER_PLAYER_N).ToList();
-        _availableCards = _availableCards.Skip(CARDS_PER_PLAYER_N).ToList();
+        _availableCards.RemoveRange(0, CARDS_PER_PLAYER_N);
         foreach (var card in playerCards)
         {
             card.SetStateAndSprite(state, _closedSprite);
@@ -117,10 +120,60 @@ public class CardManager : MonoBehaviour
         return playerCards;
     }
 
-    internal void MoveCardToDrop(Card card)
+    void PopupUntilSuitCardAndMove()
     {
-        var foundCard = Utils.RemoveAndGetElementFromList(_playerCards, card);
-        _dropCards.Add(foundCard);
-        //print($"player = {_playerCards.Count} drop = {_dropCards.Count}");
+        var i = 0;
+        Card foundCard = null;
+        foreach (var card in _availableCards)
+        {
+            if (card.Type == CardType.suit)
+            {
+                foundCard = card;
+                break;
+            }
+            i++;
+        }
+        _availableCards.RemoveAt(i);
+        if (i >= 1)
+        {
+            var cards = _availableCards.GetRange(0, i);
+            _availableCards.AddRange(cards);
+        }
+        MoveCardToDrop(foundCard);
+    }
+
+    void MoveCardToDrop(Card card)
+    {
+        _dropCards.Add(card);
+        card.SetStateAndSprite(CardState.Opened, null);
+        card.transform.SetParent(dropCardsHolder.transform, false);
+        card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 361)));
+    }
+
+    internal void TryMoveCardToDrop(List<Card> cardsSource, Card card)
+    {
+        if (IsCardMatchLastDrop(card))
+        {
+            var foundCard = Utils.RemoveAndGetElementFromList(cardsSource, card);
+            MoveCardToDrop(foundCard);
+            //print("match");
+        }
+        //print($"player = {cardsSource.Count} drop = {_dropCards.Count}");
+    }
+
+    bool IsCardMatchLastDrop(Card card)
+    {
+        if (_dropCards.Count == 0) return true;
+        var lastCardInDrop = _dropCards.Last();
+        if (card.Type == CardType.suit)
+        {
+            return lastCardInDrop.Type == CardType.suit &&
+            (card.Color == lastCardInDrop.Color || card.Value == lastCardInDrop.Value);
+        }
+        else if (card.Type == CardType.other)
+        {
+            return true;
+        }
+        return false;
     }
 }

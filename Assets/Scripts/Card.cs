@@ -17,11 +17,7 @@ class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
     public SuitColor? Color => _color;
     public SuitValue? Value => _value;
     public OtherCards? OtherCard => _other;
-    public CardState State
-    {
-        get => _state;
-        set => _state = value;
-    }
+    public CardState State => _state;
     public Sprite Sprite => _sprite;
 
     public void Init(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, Sprite sprite, Sprite closedSprite)
