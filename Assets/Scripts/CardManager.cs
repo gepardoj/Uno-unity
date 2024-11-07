@@ -25,9 +25,12 @@ public class CardManager : MonoBehaviour
     [SerializeField, RequiredMember] private Sprite _closedSprite;
 
     [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
+    [SerializeField, RequiredMember] private GameObject _cardsPull;
 
     private List<Card> _availableCards = new();
     private List<Card> _dropCards = new();
+
+    public GameObject CardsPull => _cardsPull;
 
     public void ManualInit()
     {
@@ -143,10 +146,10 @@ public class CardManager : MonoBehaviour
         return false;
     }
 
-    public void TakeNewCards(List<Card> cardsDest, GameObject cardsHolder, int cardsAmount, CardState cardState)
+    public void TakeNewCards(PlayerData player, int cardsAmount, CardState cardState)
     {
         var newCards = Utils.RemoveAndGetFirstElements(_availableCards, cardsAmount); // first N element
-        MoveCardsTo(cardsDest, cardsHolder, newCards, cardState);
+        MoveCardsTo(player.Cards, player.CardsHolder, newCards, cardState);
     }
 
     public bool IsCardMatchLastDrop(Card card)

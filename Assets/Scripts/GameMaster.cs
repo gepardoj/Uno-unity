@@ -26,17 +26,7 @@ public class GameMaster : MonoBehaviour
     IEnumerator DelayedStart()
     {
         yield return new WaitForSeconds(0.5f);
-        _playerManager.NextTurn();
-    }
-
-    public void PerformActionByPlayer(GameObject cardsHolder, Card card)
-    {
-        var player = _playerManager.GetPlayerByHolder(cardsHolder);
-        if (_cardManager.TryMoveCardToDrop(player.Cards, card))
-        {
-            _playerManager.OnEndTurn();
-            _playerManager.NextTurn();
-        };
+        _playerManager.StartGame();
     }
 
     public void UseCardByAI(PlayerData player, Card card)

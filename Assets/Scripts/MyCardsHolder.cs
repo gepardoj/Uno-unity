@@ -14,7 +14,12 @@ public class MyCardsHolder : MonoBehaviour
     {
         if (_canClick)
         {
-            GameMaster.Instance.PerformActionByPlayer(gameObject, card);
+            var game = GameMaster.Instance;
+            var player = game.PlayerManager.GetPlayerByHolder(gameObject);
+            if (game.CardManager.TryMoveCardToDrop(player.Cards, card))
+            {
+                game.PlayerManager.FinishTurn();
+            };
         }
     }
 }

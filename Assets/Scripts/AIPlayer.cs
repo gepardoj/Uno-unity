@@ -31,9 +31,9 @@ class AIPlayer : IPlayerLogic
         else
         {
             Debug.Log($"Card not found. {Player.name} Taking new card");
-            GameMaster.Instance.CardManager.TakeNewCards(Player.Cards, Player.CardsHolder, 1, CardState.closed);
+            GameMaster.Instance.CardManager.TakeNewCards(Player, 1, CardState.closed);
         }
-        GameMaster.Instance.PlayerManager.NextTurn();
+        GameMaster.Instance.PlayerManager.FinishTurn();
     }
 
     Card ChooseCard()

@@ -4,7 +4,6 @@ using UnityEngine.Scripting;
 
 enum Direction { clockwise, counterClockwise }
 
-
 public class PlayerManager : MonoBehaviour
 {
     [SerializeField, RequiredMember] private PlayerData[] _players;
@@ -12,17 +11,32 @@ public class PlayerManager : MonoBehaviour
 
     public PlayerData[] Players => _players;
 
-    public void NextTurn()
+    private PlayerData _realPlayer;
+
+    public PlayerData RealPlayer => _realPlayer;
+
+    void Start()
+    {
+        _realPlayer = GetComponentInChildren<RealPlayer>().GetComponent<PlayerData>();
+    }
+
+    public void StartGame()
+    {
+        NextTurn();
+    }
+
+    public void FinishTurn()
+    {
+        GetCurrentPlayer().Player.OnEndTurn();
+        NextTurn();
+    }
+
+    void NextTurn()
     {
         HighlightCurrentPlayer(false);
         NextPlayer();
         HighlightCurrentPlayer(true);
         GetCurrentPlayer().Player.GetTurn();
-    }
-
-    public void OnEndTurn()
-    {
-        GetCurrentPlayer().Player.OnEndTurn();
     }
 
     public PlayerData GetPlayerByHolder(GameObject cardsHolder)
