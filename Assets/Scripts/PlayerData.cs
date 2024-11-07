@@ -14,7 +14,9 @@ public class PlayerData : MonoBehaviour
 
     [SerializeField, RequiredMember] private PlayerType _playerType;
 
-    IPlayer _player; // can be real player or AI player
+    private PlayerManager _playerManager;
+
+    IPlayerLogic _player; // can be real player or AI player
 
     public List<Card> Cards
     {
@@ -23,11 +25,13 @@ public class PlayerData : MonoBehaviour
     }
     public GameObject CardsHolder => _cardsHolder;
     public Image Avatar => _avatar;
-    public IPlayer Player => _player;
+    public IPlayerLogic Player => _player;
+    public PlayerManager PlayerManager => _playerManager;
 
     void Start()
     {
-        if (_playerType == PlayerType.Player) _player = new PlayerController();
-        else if (_playerType == PlayerType.AI_Player) _player = new AIPlayer();
+        _playerManager = gameObject.transform.parent.GetComponent<PlayerManager>();
+        if (_playerType == PlayerType.Player) _player = new PlayerController(this);
+        else if (_playerType == PlayerType.AI_Player) _player = new AIPlayer(this);
     }
 }

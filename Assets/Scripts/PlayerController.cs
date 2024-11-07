@@ -1,23 +1,28 @@
 
-using UnityEngine;
-
 /// <summary>
 /// Controlled by player
 /// </summary>
-class PlayerController : IPlayer
+class PlayerController : IPlayerLogic
 {
-    public bool GetTurn()
+    private PlayerData _player;
+
+    public PlayerData Player => _player;
+
+    public PlayerController(PlayerData player)
     {
-        var cardsHolder = Object.FindObjectOfType<MyCardsHolder>();
+        _player = player;
+    }
+
+    public void GetTurn()
+    {
+        var cardsHolder = _player.CardsHolder.GetComponent<MyCardsHolder>();
         cardsHolder.CanClick = true;
-        MonoBehaviour.print($"get turn {cardsHolder.name} {cardsHolder.enabled}");
-        return false;
+        // MonoBehaviour.print($"get turn {cardsHolder.name} {cardsHolder.enabled}");
     }
     public void OnEndTurn()
     {
-        var cardsHolder = Object.FindObjectOfType<MyCardsHolder>();
-        cardsHolder.CanClick = false;
+        _player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
     }
-    public void UseCard() { }
+    public void UseCard(Card card) { }
     public void Uno() { }
 }

@@ -14,8 +14,7 @@ public class MyCardsHolder : MonoBehaviour
     {
         if (_canClick)
         {
-            var gameMaster = FindObjectOfType<GameMaster>();
-            gameMaster.PerformActionByPlayer(gameObject, card);
+            GameMaster.Instance.PerformActionByPlayer(gameObject, card);
         }
     }
 }

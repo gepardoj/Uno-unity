@@ -23,7 +23,7 @@ public class CardManager : MonoBehaviour
     [SerializeField, RequiredMember] private Card _cardPrefab;
     [SerializeField, RequiredMember] private Sprite _closedSprite;
 
-    public GameObject dropCardsHolder;
+    [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
 
     private List<Card> _availableCards;
     private List<Card> _dropCards;
@@ -39,7 +39,7 @@ public class CardManager : MonoBehaviour
         ShuffleCards();
         _dropCards = new List<Card>();
         PopupUntilSuitCardAndMove();
-        print($"Available = {_availableCards.Count}");
+        // print($"Available = {_availableCards.Count}");
     }
 
     void GenerateCards()
@@ -86,10 +86,11 @@ public class CardManager : MonoBehaviour
         _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
     }
 
-    public List<Card> GiveCardsToPlayer(int cardsNumber, CardState state, GameObject cardHolder)
+    // TODO: check if redundant
+    public List<Card> GiveCardsToPlayer(int cardsAmount, CardState state, GameObject cardHolder)
     {
-        var playerCards = _availableCards.Take(cardsNumber).ToList();
-        _availableCards.RemoveRange(0, cardsNumber);
+        var playerCards = _availableCards.Take(cardsAmount).ToList();
+        _availableCards.RemoveRange(0, cardsAmount);
         foreach (var card in playerCards)
         {
             card.SetStateAndSprite(state, _closedSprite);
@@ -119,23 +120,34 @@ public class CardManager : MonoBehaviour
             var cards = _availableCards.GetRange(0, i);
             _availableCards.AddRange(cards);
         }
-        MoveCardToDrop(foundCard);
+        MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
     }
 
-    void MoveCardToDrop(Card card)
+    void MoveCardTo(List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState cardState)
     {
-        _dropCards.Add(card);
-        card.SetStateAndSprite(CardState.opened, null);
-        card.transform.SetParent(dropCardsHolder.transform, false);
-        card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 361)));
+        foreach (var card in newCards)
+        {
+            cardsDest.Add(card);
+            card.SetStateAndSprite(cardState, _closedSprite);
+            card.transform.SetParent(cardsHolder.transform, false);
+            card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 361)));
+        }
+        var rotateAround = cardsHolder.GetComponent<RotateAround>();
+        if (rotateAround) rotateAround.PlaceCards();
+    }
+
+    public void MoveCardToDrop(List<Card> cardsSource, Card card)
+    {
+        var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
+        MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
     }
 
     public bool TryMoveCardToDrop(List<Card> cardsSource, Card card)
     {
         if (IsCardMatchLastDrop(card))
         {
-            var foundCard = Utils.RemoveAndGetElementFromList(cardsSource, card);
-            MoveCardToDrop(foundCard);
+            var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
+            MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
             //print("match");
             return true;
         }
@@ -143,7 +155,14 @@ public class CardManager : MonoBehaviour
         return false;
     }
 
-    bool IsCardMatchLastDrop(Card card)
+    public void TakeNewCards(List<Card> cardsDest, GameObject cardsHolder, int cardsAmount, CardState cardState)
+    {
+        var newCards = Utils.RemoveAndGetFirstElements(_availableCards, cardsAmount); // first N element
+        cardsDest.AddRange(newCards);
+        MoveCardTo(cardsDest, cardsHolder, newCards, cardState);
+    }
+
+    public bool IsCardMatchLastDrop(Card card)
     {
         if (_dropCards.Count == 0) return true;
         var lastCardInDrop = _dropCards.Last();

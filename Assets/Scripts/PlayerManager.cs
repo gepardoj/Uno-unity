@@ -29,11 +29,7 @@ public class PlayerManager : MonoBehaviour
         HighlightCurrentPlayer(false);
         NextPlayer();
         HighlightCurrentPlayer(true);
-        var res = GetCurrentPlayer().Player.GetTurn();
-        if (res)
-        {
-            NextTurn();
-        }
+        GetCurrentPlayer().Player.GetTurn();
     }
 
     public void OnEndTurn()

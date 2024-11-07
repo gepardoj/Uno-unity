@@ -8,7 +8,7 @@ public enum SuitColor { red, green, blue, yellow }
 public enum SuitValue { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, cancel, _draw, reverse }
 public enum OtherCards { wild, wilddraw }
 
-public class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
+public class Card : MonoBehaviour, IPointerClickHandler
 {
     private CardType _type;
     private SuitColor? _color;
@@ -37,7 +37,8 @@ public class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        transform.parent.GetComponent<MyCardsHolder>().OnSelectCard(this);
+        var myCardsHolder = transform.parent.GetComponent<MyCardsHolder>();
+        if (myCardsHolder) myCardsHolder.OnSelectCard(this);
     }
 
     public void SetStateAndSprite(CardState state, Sprite closedSprite)
