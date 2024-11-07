@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GameMaster : MonoBehaviour
@@ -19,13 +20,12 @@ public class GameMaster : MonoBehaviour
         _playerManager = GetComponentInChildren<PlayerManager>();
 
         _cardManager.ManualInit();
+        StartCoroutine(DelayedStart());
+    }
 
-        _playerManager.ManualInit(new PlayerManager.GetCardsCB[]{
-            holder => _cardManager.GiveCardsToPlayer(CardManager.START_CARDS_N, CardState.opened, holder),
-            holder => _cardManager.GiveCardsToPlayer(CardManager.START_CARDS_N, CardState.closed, holder),
-            holder => _cardManager.GiveCardsToPlayer(CardManager.START_CARDS_N, CardState.closed, holder),
-            holder => _cardManager.GiveCardsToPlayer(CardManager.START_CARDS_N, CardState.closed, holder)
-        });
+    IEnumerator DelayedStart()
+    {
+        yield return new WaitForSeconds(0.5f);
         _playerManager.NextTurn();
     }
 

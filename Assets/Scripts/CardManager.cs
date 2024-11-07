@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -25,8 +26,8 @@ public class CardManager : MonoBehaviour
 
     [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
 
-    private List<Card> _availableCards;
-    private List<Card> _dropCards;
+    private List<Card> _availableCards = new();
+    private List<Card> _dropCards = new();
 
     public void ManualInit()
     {
@@ -37,33 +38,31 @@ public class CardManager : MonoBehaviour
 
         GenerateCards();
         ShuffleCards();
-        _dropCards = new List<Card>();
         PopupUntilSuitCardAndMove();
         // print($"Available = {_availableCards.Count}");
     }
 
     void GenerateCards()
     {
-        _availableCards = new List<Card>();
         int i = 0;
         foreach (SuitColor color in Enum.GetValues(typeof(SuitColor)))
         {
             foreach (SuitValue value in Enum.GetValues(typeof(SuitValue)))
             {
-                CreateAndAdd(CardType.suit, color, value, null, i++);
+                CreateAndAddCardsToPull(CardType.suit, color, value, null, i++);
                 if (value != SuitValue._0) // 1 zero value, rests are by 2
                 {
-                    CreateAndAdd(CardType.suit, color, value, null, i++);
+                    CreateAndAddCardsToPull(CardType.suit, color, value, null, i++);
                 }
             }
         }
-        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAdd(CardType.other, null, null, OtherCards.wild, i++);
-        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAdd(CardType.other, null, null, OtherCards.wilddraw, i++);
+        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAddCardsToPull(CardType.other, null, null, OtherCards.wild, i++);
+        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAddCardsToPull(CardType.other, null, null, OtherCards.wilddraw, i++);
 
         if (_availableCards == null || _availableCards.Count != TOTAL_CARDS_N) throw new Exception($"Total cards should be {TOTAL_CARDS_N}, but found {_availableCards.Count}");
     }
 
-    void CreateAndAdd(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, int index)
+    void CreateAndAddCardsToPull(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, int index)
     {
         var card = Instantiate(_cardPrefab);
         card.transform.SetParent(transform, false);
@@ -86,21 +85,6 @@ public class CardManager : MonoBehaviour
         _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
     }
 
-    // TODO: check if redundant
-    public List<Card> GiveCardsToPlayer(int cardsAmount, CardState state, GameObject cardHolder)
-    {
-        var playerCards = _availableCards.Take(cardsAmount).ToList();
-        _availableCards.RemoveRange(0, cardsAmount);
-        foreach (var card in playerCards)
-        {
-            card.SetStateAndSprite(state, _closedSprite);
-            card.transform.SetParent(cardHolder.transform, false);
-        }
-        var rotateAround = cardHolder.GetComponent<RotateAround>();
-        if (rotateAround) rotateAround.PlaceCards();
-        return playerCards;
-    }
-
     void PopupUntilSuitCardAndMove()
     {
         var i = 0;
@@ -120,17 +104,21 @@ public class CardManager : MonoBehaviour
             var cards = _availableCards.GetRange(0, i);
             _availableCards.AddRange(cards);
         }
-        MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
+        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
     }
 
-    void MoveCardTo(List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState cardState)
+    /// <summary>
+    /// Does not remove cards from source
+    /// </summary>
+    void MoveCardsTo(List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState cardState,
+    [Optional] Vector3 rotation)
     {
         foreach (var card in newCards)
         {
             cardsDest.Add(card);
             card.SetStateAndSprite(cardState, _closedSprite);
             card.transform.SetParent(cardsHolder.transform, false);
-            card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 361)));
+            card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(rotation));
         }
         var rotateAround = cardsHolder.GetComponent<RotateAround>();
         if (rotateAround) rotateAround.PlaceCards();
@@ -139,15 +127,15 @@ public class CardManager : MonoBehaviour
     public void MoveCardToDrop(List<Card> cardsSource, Card card)
     {
         var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
-        MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
+        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard },
+            CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
     }
 
     public bool TryMoveCardToDrop(List<Card> cardsSource, Card card)
     {
         if (IsCardMatchLastDrop(card))
         {
-            var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
-            MoveCardTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
+            MoveCardToDrop(cardsSource, card);
             //print("match");
             return true;
         }
@@ -158,8 +146,7 @@ public class CardManager : MonoBehaviour
     public void TakeNewCards(List<Card> cardsDest, GameObject cardsHolder, int cardsAmount, CardState cardState)
     {
         var newCards = Utils.RemoveAndGetFirstElements(_availableCards, cardsAmount); // first N element
-        cardsDest.AddRange(newCards);
-        MoveCardTo(cardsDest, cardsHolder, newCards, cardState);
+        MoveCardsTo(cardsDest, cardsHolder, newCards, cardState);
     }
 
     public bool IsCardMatchLastDrop(Card card)

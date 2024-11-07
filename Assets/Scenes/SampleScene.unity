@@ -226,6 +226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cc2058d6b74414fb888fb68d60d3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cards: []
   _cardsHolder: {fileID: 162909241}
   _avatar: {fileID: 1660088025}
   _playerType: 0
@@ -429,6 +430,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cc2058d6b74414fb888fb68d60d3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cards: []
   _cardsHolder: {fileID: 396139393}
   _avatar: {fileID: 904867334}
   _playerType: 1
@@ -476,6 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cc2058d6b74414fb888fb68d60d3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cards: []
   _cardsHolder: {fileID: 1399784676}
   _avatar: {fileID: 1640844151}
   _playerType: 1
@@ -1216,11 +1219,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4939c5e1243c7ac42af6e1835b0e66bc, type: 2}
   _cardPrefab: {fileID: 3561774769643049993, guid: 81256853bd1e47647a10f32d54244fa8, type: 3}
   _closedSprite: {fileID: 21300000, guid: 9330b452138c2c740b1e811f504bdd14, type: 3}
-  _playerCardsHolder: {fileID: 162909241}
-  _leftOpponentCardsHolder: {fileID: 1399784676}
-  _topOpponentCardsHolder: {fileID: 396139393}
-  _rightOpponentCardsHolder: {fileID: 1482124892}
-  dropCardsHolder: {fileID: 1096159060}
+  _dropCardsHolder: {fileID: 1096159060}
 --- !u!4 &1511990840
 Transform:
   m_ObjectHideFlags: 0
@@ -1885,6 +1884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8cc2058d6b74414fb888fb68d60d3ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cards: []
   _cardsHolder: {fileID: 1482124892}
   _avatar: {fileID: 2066563945}
   _playerType: 1
