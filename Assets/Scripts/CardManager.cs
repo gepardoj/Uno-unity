@@ -4,12 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-enum CardType { suit, other }
-enum SuitColor { red, green, blue, yellow }
-enum SuitValue { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, cancel, _draw, reverse }
-enum OtherCards { wild, wilddraw }
-
-
 public class CardManager : MonoBehaviour
 {
     const int SUIT_COLORS_N = 4;
@@ -20,7 +14,7 @@ public class CardManager : MonoBehaviour
     const int TOTAL_CARDS_N = 108;
     const int WILD_NUMBER = 4;
     const int WILDDRAW_NUMBER = 4;
-    const int CARDS_PER_PLAYER_N = 7;
+    public static int START_CARDS_N = 7;
 
 
     [SerializeField, RequiredMember] private SuitCard[] _suitCardsDef;
@@ -28,23 +22,13 @@ public class CardManager : MonoBehaviour
 
     [SerializeField, RequiredMember] private Card _cardPrefab;
     [SerializeField, RequiredMember] private Sprite _closedSprite;
-    [SerializeField, RequiredMember] private GameObject _playerCardsHolder;
-    [SerializeField, RequiredMember] private GameObject _leftOpponentCardsHolder;
-    [SerializeField, RequiredMember] private GameObject _topOpponentCardsHolder;
-    [SerializeField, RequiredMember] private GameObject _rightOpponentCardsHolder;
 
     public GameObject dropCardsHolder;
 
-
     private List<Card> _availableCards;
-    private List<Card> _playerCards;
-    internal List<Card> PlayerCards => _playerCards;
-    private List<Card> _leftOpponentCards;
-    private List<Card> _topOpponentCards;
-    private List<Card> _rightOpponentCards;
     private List<Card> _dropCards;
 
-    void Start()
+    public void ManualInit()
     {
         if (_suitCardsDef == null || _suitCardsDef.Length != SUIT_CARDS_DEF_N)
             throw new Exception($"Suit cards definition should be {SUIT_CARDS_DEF_N}");
@@ -53,10 +37,6 @@ public class CardManager : MonoBehaviour
 
         GenerateCards();
         ShuffleCards();
-        _playerCards = GiveCardsToPlayer(CardState.Opened, _playerCardsHolder);
-        _leftOpponentCards = GiveCardsToPlayer(CardState.Closed, _leftOpponentCardsHolder);
-        _topOpponentCards = GiveCardsToPlayer(CardState.Closed, _topOpponentCardsHolder);
-        _rightOpponentCards = GiveCardsToPlayer(CardState.Closed, _rightOpponentCardsHolder);
         _dropCards = new List<Card>();
         PopupUntilSuitCardAndMove();
         print($"Available = {_availableCards.Count}");
@@ -106,10 +86,10 @@ public class CardManager : MonoBehaviour
         _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
     }
 
-    List<Card> GiveCardsToPlayer(CardState state, GameObject cardHolder)
+    public List<Card> GiveCardsToPlayer(int cardsNumber, CardState state, GameObject cardHolder)
     {
-        var playerCards = _availableCards.Take(CARDS_PER_PLAYER_N).ToList();
-        _availableCards.RemoveRange(0, CARDS_PER_PLAYER_N);
+        var playerCards = _availableCards.Take(cardsNumber).ToList();
+        _availableCards.RemoveRange(0, cardsNumber);
         foreach (var card in playerCards)
         {
             card.SetStateAndSprite(state, _closedSprite);
@@ -145,20 +125,22 @@ public class CardManager : MonoBehaviour
     void MoveCardToDrop(Card card)
     {
         _dropCards.Add(card);
-        card.SetStateAndSprite(CardState.Opened, null);
+        card.SetStateAndSprite(CardState.opened, null);
         card.transform.SetParent(dropCardsHolder.transform, false);
         card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 361)));
     }
 
-    internal void TryMoveCardToDrop(List<Card> cardsSource, Card card)
+    public bool TryMoveCardToDrop(List<Card> cardsSource, Card card)
     {
         if (IsCardMatchLastDrop(card))
         {
             var foundCard = Utils.RemoveAndGetElementFromList(cardsSource, card);
             MoveCardToDrop(foundCard);
             //print("match");
+            return true;
         }
         //print($"player = {cardsSource.Count} drop = {_dropCards.Count}");
+        return false;
     }
 
     bool IsCardMatchLastDrop(Card card)

@@ -1,6 +1,4 @@
-using System.Reflection.Emit;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [CreateAssetMenu(fileName = "Suit", menuName = "Cards/Suit card", order = 1)]
 class SuitCard : ScriptableObject, ICardDefinition
@@ -16,18 +14,8 @@ class SuitCard : ScriptableObject, ICardDefinition
 
     public SuitCard(SuitColor color, SuitValue value, Sprite sprite)
     {
-        this._color = color;
-        this._value = value;
-        this._sprite = sprite;
-    }
-
-    public ICardDefinition CreateInstance(SuitColor color, SuitValue value, Sprite sprite)
-    {
-        var clone = ScriptableObject.Instantiate(this);
-        clone._color = color;
-        clone._value = value;
-        clone._sprite = sprite;
-        clone.name = clone.name[..^7]; // Remove (Clone) from name
-        return clone;
+        _color = color;
+        _value = value;
+        _sprite = sprite;
     }
 }

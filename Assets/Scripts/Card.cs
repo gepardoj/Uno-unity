@@ -2,9 +2,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-enum CardState { Closed, Opened }
+public enum CardState { closed, opened }
+public enum CardType { suit, other }
+public enum SuitColor { red, green, blue, yellow }
+public enum SuitValue { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, cancel, _draw, reverse }
+public enum OtherCards { wild, wilddraw }
 
-class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
+public class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
 {
     private CardType _type;
     private SuitColor? _color;
@@ -27,7 +31,7 @@ class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
         _value = value;
         _other = other;
         _sprite = sprite;
-        _state = CardState.Closed;
+        _state = CardState.closed;
         SetStateAndSprite(_state, closedSprite);
     }
 
@@ -39,11 +43,11 @@ class Card : MonoBehaviour, IPointerClickHandler, ICardDefinition
     public void SetStateAndSprite(CardState state, Sprite closedSprite)
     {
         _state = state;
-        if (_state == CardState.Closed)
+        if (_state == CardState.closed)
         {
             GetComponent<Image>().sprite = closedSprite;
         }
-        else if (_state == CardState.Opened)
+        else if (_state == CardState.opened)
         {
             GetComponent<Image>().sprite = _sprite;
         }

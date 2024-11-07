@@ -1,10 +1,21 @@
 using UnityEngine;
 
-internal class MyCardsHolder : MonoBehaviour
+public class MyCardsHolder : MonoBehaviour
 {
+    private bool _canClick = false;
+
+    public bool CanClick
+    {
+        get => _canClick;
+        set => _canClick = value;
+    }
+
     public void OnSelectCard(Card card)
     {
-        var cardManager = FindObjectOfType<CardManager>();
-        cardManager.TryMoveCardToDrop(cardManager.PlayerCards, card);
+        if (_canClick)
+        {
+            var gameMaster = FindObjectOfType<GameMaster>();
+            gameMaster.PerformActionByPlayer(gameObject, card);
+        }
     }
 }
