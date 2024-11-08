@@ -31,6 +31,7 @@ class AIPlayer : IPlayerLogic
         if (card)
         {
             GameMaster.Instance.CardManager.MoveCardToDrop(Player.Cards, card);
+            GameMaster.Instance.PlayerManager.CheckChangingDirection(card);
             if (card.Type == CardType.other)
             {
                 GameMaster.Instance.CardManager.CurrentColor = ChooseColor();
@@ -57,7 +58,7 @@ class AIPlayer : IPlayerLogic
     SuitColor ChooseColor()
     {
         var colors = Player.Cards.Where(card => card.Color != null);
-        colors = Player.Cards.DistinctBy(card => card.Color);
+        colors = colors.DistinctBy(card => card.Color);
         if (colors.Count() == 0) return Utils.RandomEnum<SuitColor>(); // no suitcards left, choose random color
         return (SuitColor)colors.ToArray()[Random.Range(0, colors.Count())].Color;
     }
