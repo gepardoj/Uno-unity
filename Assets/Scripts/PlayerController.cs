@@ -56,10 +56,4 @@ class PlayerController : IPlayerLogic
     }
 
     public void Uno() { }
-
-    public void OnPullCards()
-    {
-        GameMaster.Instance.CardManager.TakeNewCards(Player, 1, CardState.opened);
-        GameMaster.Instance.PlayerManager.FinishTurn();
-    }
 }

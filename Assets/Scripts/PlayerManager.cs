@@ -28,12 +28,13 @@ public class PlayerManager : MonoBehaviour
 
     public void StartGame()
     {
-        NextTurn();
+        NextTurn(true);
     }
 
-    public void OnPullCards()
+    public void PullCards(int amount)
     {
-        CurrentPlayer.Player.OnPullCards();
+        GameMaster.Instance.CardManager.TakeNewCards(CurrentPlayer, amount,
+            CurrentPlayer.PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
     }
 
     public void OnChooseColor(SuitColor color)
@@ -44,13 +45,14 @@ public class PlayerManager : MonoBehaviour
     public void FinishTurn()
     {
         CurrentPlayer.Player.OnEndTurn();
-        NextTurn();
+        NextTurn(true);
     }
 
     public void PlayCardRule(Card card)
     {
         AttemptChangeDirection(card);
-        AttempSkip(card);
+        AttemptSkip(card); // order is important
+        AttempDraw(card); // for theese two
     }
 
     // inner methods
@@ -61,22 +63,27 @@ public class PlayerManager : MonoBehaviour
             Direction = Direction == Direction.clockwise ? Direction.counterClockwise : Direction.clockwise;
     }
 
-    void AttempSkip(Card card)
+    void AttemptSkip(Card card)
     {
         if ((card.Type == CardType.suit && (card.Value == SuitValue.cancel || card.Value == SuitValue._draw))
         || (card.Type == CardType.other && card.Other == OtherCards.wilddraw))
         {
-            IterateNext();
+            NextTurn(false);
         }
     }
 
-    void NextTurn()
+    void AttempDraw(Card card)
+    {
+        if (card.Type == CardType.suit && card.Value == SuitValue._draw) PullCards(2);
+        else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw) PullCards(4);
+    }
+
+    void NextTurn(bool getTurn)
     {
         HighlightCurrentPlayer(false);
-        IterateNext();
-        _currentPlayer = _players[_currentPlayerIndex];
+        NextPlayer();
         HighlightCurrentPlayer(true);
-        CurrentPlayer.Player.GetTurn();
+        if (getTurn) CurrentPlayer.Player.GetTurn();
     }
 
     void HighlightCurrentPlayer(bool highlight)
@@ -85,7 +92,7 @@ public class PlayerManager : MonoBehaviour
         CurrentPlayer.Avatar.color = highlight ? Color.yellow : Color.white;
     }
 
-    void IterateNext()
+    void NextPlayer()
     {
         if (Direction == Direction.clockwise)
         {
@@ -97,5 +104,6 @@ public class PlayerManager : MonoBehaviour
             _currentPlayerIndex--;
             if (_currentPlayerIndex == -1) _currentPlayerIndex = _players.Length - 1;
         }
+        _currentPlayer = _players[_currentPlayerIndex];
     }
 }

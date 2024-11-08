@@ -5,6 +5,5 @@ public interface IPlayerLogic
     void OnEndTurn();
     void UseCard(Card card);
     void Uno();
-    void OnPullCards();
     void OnChooseColor(SuitColor color);
 }

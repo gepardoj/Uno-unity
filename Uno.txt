@@ -1,7 +1,4 @@
-- First card to drop should be numeric
-- When AI get card, close card and fix position. Update RotateAround
-- Play animation for moving cards
-- When play wild, wilddraw, Set the Color
-- 
+- First card to drop should be numeric (not but apply a rule)
+- Play animation for moving cards 
 
 - Refactor (do more elegant, logic code)

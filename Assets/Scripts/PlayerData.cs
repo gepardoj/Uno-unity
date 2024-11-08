@@ -23,6 +23,7 @@ public class PlayerData : MonoBehaviour
     }
     public GameObject CardsHolder => _cardsHolder;
     public Image Avatar => _avatar;
+    public PlayerType PlayerType => _playerType;
     public IPlayerLogic Player => _player;
 
     void Start()

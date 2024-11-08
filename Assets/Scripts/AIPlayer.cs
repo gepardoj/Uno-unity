@@ -40,7 +40,7 @@ class AIPlayer : IPlayerLogic
         else
         {
             // Debug.Log($"{Player.name} Taking new card");
-            OnPullCards();
+            GameMaster.Instance.PlayerManager.PullCards(1);
         }
         GameMaster.Instance.PlayerManager.FinishTurn();
     }
@@ -61,11 +61,6 @@ class AIPlayer : IPlayerLogic
         colors = colors.DistinctBy(card => card.Color);
         if (colors.Count() == 0) return Utils.RandomEnum<SuitColor>(); // no suitcards left, choose random color
         return (SuitColor)colors.ToArray()[Random.Range(0, colors.Count())].Color;
-    }
-
-    public void OnPullCards()
-    {
-        GameMaster.Instance.CardManager.TakeNewCards(Player, 1, CardState.closed);
     }
 
     public void OnChooseColor(SuitColor color) { }
