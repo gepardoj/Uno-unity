@@ -32,7 +32,7 @@ class PlayerController : IPlayerLogic
         if (GameMaster.Instance.CardManager.TryMoveCardToDrop(Player.Cards, card))
             if (card.Type == CardType.suit)
             {
-                GameMaster.Instance.PlayerManager.CheckChangingDirection(card);
+                GameMaster.Instance.PlayerManager.PlayCardRule(card);
                 GameMaster.Instance.PlayerManager.FinishTurn();
             }
             else if (card.Type == CardType.other)

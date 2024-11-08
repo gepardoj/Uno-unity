@@ -47,18 +47,34 @@ public class PlayerManager : MonoBehaviour
         NextTurn();
     }
 
-    public void CheckChangingDirection(Card card)
+    public void PlayCardRule(Card card)
+    {
+        AttemptChangeDirection(card);
+        AttempSkip(card);
+    }
+
+    // inner methods
+
+    void AttemptChangeDirection(Card card)
     {
         if (card.Type == CardType.suit && card.Value == SuitValue.reverse)
             Direction = Direction == Direction.clockwise ? Direction.counterClockwise : Direction.clockwise;
     }
 
-    // inner methods
+    void AttempSkip(Card card)
+    {
+        if ((card.Type == CardType.suit && (card.Value == SuitValue.cancel || card.Value == SuitValue._draw))
+        || (card.Type == CardType.other && card.Other == OtherCards.wilddraw))
+        {
+            IterateNext();
+        }
+    }
 
     void NextTurn()
     {
         HighlightCurrentPlayer(false);
-        NextPlayer();
+        IterateNext();
+        _currentPlayer = _players[_currentPlayerIndex];
         HighlightCurrentPlayer(true);
         CurrentPlayer.Player.GetTurn();
     }
@@ -69,7 +85,7 @@ public class PlayerManager : MonoBehaviour
         CurrentPlayer.Avatar.color = highlight ? Color.yellow : Color.white;
     }
 
-    void NextPlayer()
+    void IterateNext()
     {
         if (Direction == Direction.clockwise)
         {
@@ -81,6 +97,5 @@ public class PlayerManager : MonoBehaviour
             _currentPlayerIndex--;
             if (_currentPlayerIndex == -1) _currentPlayerIndex = _players.Length - 1;
         }
-        _currentPlayer = _players[_currentPlayerIndex];
     }
 }

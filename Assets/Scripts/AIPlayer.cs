@@ -31,7 +31,7 @@ class AIPlayer : IPlayerLogic
         if (card)
         {
             GameMaster.Instance.CardManager.MoveCardToDrop(Player.Cards, card);
-            GameMaster.Instance.PlayerManager.CheckChangingDirection(card);
+            GameMaster.Instance.PlayerManager.PlayCardRule(card);
             if (card.Type == CardType.other)
             {
                 GameMaster.Instance.CardManager.CurrentColor = ChooseColor();

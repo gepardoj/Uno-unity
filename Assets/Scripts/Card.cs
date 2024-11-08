@@ -20,7 +20,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public CardType Type => _type;
     public SuitColor? Color => _color;
     public SuitValue? Value => _value;
-    public OtherCards? OtherCard => _other;
+    public OtherCards? Other => _other;
     public CardState State => _state;
     public Sprite Sprite => _sprite;
 
