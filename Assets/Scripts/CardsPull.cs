@@ -15,8 +15,7 @@ public class CardsPull : MonoBehaviour, IPointerClickHandler
     {
         if (CanClick)
         {
-            GameMaster.Instance.CardManager.TakeNewCards(GameMaster.Instance.PlayerManager.RealPlayer, 1, CardState.opened);
-            GameMaster.Instance.PlayerManager.FinishTurn();
+            GameMaster.Instance.PlayerManager.OnPullCards();
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -7,17 +6,18 @@ enum Direction { clockwise, counterClockwise }
 public class PlayerManager : MonoBehaviour
 {
     [SerializeField, RequiredMember] private PlayerData[] _players;
-    int _currentPlayer = -1;
+    int _currentPlayerIndex = -1;
+    private PlayerData _currentPlayer;
 
     public PlayerData[] Players => _players;
 
-    private PlayerData _realPlayer;
+    public PlayerData CurrentPlayer => _currentPlayer;
 
-    public PlayerData RealPlayer => _realPlayer;
+    // public actions
 
-    void Start()
+    public void UseCard(Card card)
     {
-        _realPlayer = GetComponentInChildren<RealPlayer>().GetComponent<PlayerData>();
+        CurrentPlayer.Player.UseCard(card);
     }
 
     public void StartGame()
@@ -25,41 +25,37 @@ public class PlayerManager : MonoBehaviour
         NextTurn();
     }
 
+    public void OnPullCards()
+    {
+        CurrentPlayer.Player.OnPullCards();
+    }
+
     public void FinishTurn()
     {
-        GetCurrentPlayer().Player.OnEndTurn();
+        CurrentPlayer.Player.OnEndTurn();
         NextTurn();
     }
+
+    // inner methods
 
     void NextTurn()
     {
         HighlightCurrentPlayer(false);
         NextPlayer();
         HighlightCurrentPlayer(true);
-        GetCurrentPlayer().Player.GetTurn();
-    }
-
-    public PlayerData GetPlayerByHolder(GameObject cardsHolder)
-    {
-        return _players.First(el => el.CardsHolder == cardsHolder);
+        CurrentPlayer.Player.GetTurn();
     }
 
     void HighlightCurrentPlayer(bool highlight)
     {
-        var info = GetCurrentPlayer();
-        if (info == null) return;
-        info.Avatar.color = highlight ? Color.yellow : Color.white;
-    }
-
-    PlayerData GetCurrentPlayer()
-    {
-        if (_currentPlayer < 0) return null;
-        return _players[_currentPlayer];
+        if (CurrentPlayer == null) return;
+        CurrentPlayer.Avatar.color = highlight ? Color.yellow : Color.white;
     }
 
     void NextPlayer()
     {
-        _currentPlayer++;
-        if (_currentPlayer == _players.Length) _currentPlayer = 0;
+        _currentPlayerIndex++;
+        if (_currentPlayerIndex == _players.Length) _currentPlayerIndex = 0;
+        _currentPlayer = _players[_currentPlayerIndex];
     }
 }

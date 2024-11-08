@@ -28,9 +28,4 @@ public class GameMaster : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         _playerManager.StartGame();
     }
-
-    public void UseCardByAI(PlayerData player, Card card)
-    {
-        _cardManager.MoveCardToDrop(player.Cards, card);
-    }
 }

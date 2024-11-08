@@ -2,19 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using TMPro;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Scripting;
 
 public class CardManager : MonoBehaviour
 {
-    const int SUIT_COLORS_N = 4;
-    const int SUIT_VALUES_N = 13;
-    const int SUIT_CARDS_DEF_N = SUIT_COLORS_N * SUIT_VALUES_N;
-    const int OTHER_CARDS_DEF_N = 2;
-
-    const int TOTAL_CARDS_N = 108;
-    const int WILD_NUMBER = 4;
-    const int WILDDRAW_NUMBER = 4;
+    public static int SUIT_COLORS_N = 4;
+    public static int SUIT_VALUES_N = 13;
+    public static int SUIT_CARDS_DEF_N = SUIT_COLORS_N * SUIT_VALUES_N;
+    public static int OTHER_CARDS_DEF_N = 2;
+    public static int TOTAL_CARDS_N = 108;
+    public static int WILD_NUMBER = 4;
+    public static int WILDDRAW_NUMBER = 4;
     public static int START_CARDS_N = 7;
 
 
@@ -27,10 +28,25 @@ public class CardManager : MonoBehaviour
     [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
     [SerializeField, RequiredMember] private GameObject _cardsPull;
 
-    private List<Card> _availableCards = new();
-    private List<Card> _dropCards = new();
+    [SerializeField, RequiredMember] private TextMeshProUGUI _currentColorText;
+    [SerializeField, ReadOnly] private SuitColor? _currentColor;
+
+
+    [SerializeField, ReadOnly] private List<Card> _availableCards = new();
+    [SerializeField, ReadOnly] private List<Card> _dropCards = new();
 
     public GameObject CardsPull => _cardsPull;
+
+    public SuitColor? CurrentColor
+    {
+        get => _currentColor;
+        set
+        {
+            _currentColor = value;
+            var text = value != null ? Enum.GetName(typeof(SuitColor), value) : "Unknown";
+            _currentColorText.text = $"Current Color: {text}";
+        }
+    }
 
     public void ManualInit()
     {
@@ -107,6 +123,7 @@ public class CardManager : MonoBehaviour
             var cards = _availableCards.GetRange(0, i);
             _availableCards.AddRange(cards);
         }
+        CurrentColor = foundCard.Color;
         MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
     }
 
@@ -130,6 +147,7 @@ public class CardManager : MonoBehaviour
     public void MoveCardToDrop(List<Card> cardsSource, Card card)
     {
         var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
+        CurrentColor = foundCard.Color;
         MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard },
             CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
     }
@@ -158,8 +176,7 @@ public class CardManager : MonoBehaviour
         var lastCardInDrop = _dropCards.Last();
         if (card.Type == CardType.suit)
         {
-            return lastCardInDrop.Type == CardType.suit &&
-            (card.Color == lastCardInDrop.Color || card.Value == lastCardInDrop.Value);
+            return card.Color == CurrentColor || card.Value == lastCardInDrop.Value;
         }
         else if (card.Type == CardType.other)
         {
