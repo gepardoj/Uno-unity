@@ -66,4 +66,6 @@ class AIPlayer : IPlayerLogic
     {
         GameMaster.Instance.CardManager.TakeNewCards(Player, 1, CardState.closed);
     }
+
+    public void OnChooseColor(SuitColor color) { }
 }

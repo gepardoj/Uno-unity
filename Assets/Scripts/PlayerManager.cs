@@ -30,6 +30,11 @@ public class PlayerManager : MonoBehaviour
         CurrentPlayer.Player.OnPullCards();
     }
 
+    public void OnChooseColor(SuitColor color)
+    {
+        CurrentPlayer.Player.OnChooseColor(color);
+    }
+
     public void FinishTurn()
     {
         CurrentPlayer.Player.OnEndTurn();

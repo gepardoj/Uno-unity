@@ -26,7 +26,9 @@ public class CardManager : MonoBehaviour
     [SerializeField, RequiredMember] private Sprite _closedSprite;
 
     [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
-    [SerializeField, RequiredMember] private GameObject _cardsPull;
+    [SerializeField, RequiredMember] private CardsPull _cardsPull;
+
+    [SerializeField, RequiredMember] private GameObject _colorPicker;
 
     [SerializeField, RequiredMember] private TextMeshProUGUI _currentColorText;
     [SerializeField, ReadOnly] private SuitColor? _currentColor;
@@ -35,8 +37,8 @@ public class CardManager : MonoBehaviour
     [SerializeField, ReadOnly] private List<Card> _availableCards = new();
     [SerializeField, ReadOnly] private List<Card> _dropCards = new();
 
-    public GameObject CardsPull => _cardsPull;
-
+    public CardsPull CardsPull => _cardsPull;
+    public GameObject ColorPicker => _colorPicker;
     public SuitColor? CurrentColor
     {
         get => _currentColor;
@@ -54,6 +56,8 @@ public class CardManager : MonoBehaviour
             throw new Exception($"Suit cards definition should be {SUIT_CARDS_DEF_N}");
         if (_otherCardsDef == null || _otherCardsDef.Length != OTHER_CARDS_DEF_N)
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
+
+        _colorPicker.GetComponent<RotateAround>().PlaceCards();
 
         GenerateCards();
         ShuffleCards();

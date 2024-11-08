@@ -17,22 +17,41 @@ class PlayerController : IPlayerLogic
     {
         var cardsHolder = _player.CardsHolder.GetComponent<MyCardsHolder>();
         cardsHolder.CanClick = true;
-        GameMaster.Instance.CardManager.CardsPull.GetComponent<CardsPull>().CanClick = true;
+        GameMaster.Instance.CardManager.CardsPull.CanClick = true;
         // MonoBehaviour.print($"get turn {cardsHolder.name} {cardsHolder.enabled}");
     }
 
     public void OnEndTurn()
     {
         _player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
-        GameMaster.Instance.CardManager.CardsPull.GetComponent<CardsPull>().CanClick = false;
+        GameMaster.Instance.CardManager.CardsPull.CanClick = false;
     }
 
     public void UseCard(Card card)
     {
         if (GameMaster.Instance.CardManager.TryMoveCardToDrop(Player.Cards, card))
-        {
-            GameMaster.Instance.PlayerManager.FinishTurn();
-        };
+            if (card.Type == CardType.suit)
+            {
+                GameMaster.Instance.PlayerManager.FinishTurn();
+            }
+            else if (card.Type == CardType.other)
+            {
+                WaitForColorToChoose();
+            }
+    }
+
+    void WaitForColorToChoose()
+    {
+        GameMaster.Instance.CardManager.ColorPicker.SetActive(true);
+        GameMaster.Instance.CardManager.CardsPull.CanClick = false;
+        Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
+    }
+
+    public void OnChooseColor(SuitColor color)
+    {
+        GameMaster.Instance.CardManager.ColorPicker.SetActive(false);
+        GameMaster.Instance.CardManager.CurrentColor = color;
+        GameMaster.Instance.PlayerManager.FinishTurn();
     }
 
     public void Uno() { }
