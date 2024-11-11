@@ -14,7 +14,7 @@ public class MyCardsHolder : MonoBehaviour
     {
         if (CanClick)
         {
-            GameMaster.Instance.PlayerManager.UseCard(card);
+            GameMaster.Instance.PlayerManager.OnChooseCard(card);
         }
     }
 }

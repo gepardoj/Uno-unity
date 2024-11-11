@@ -11,6 +11,7 @@ public class PlayerData : MonoBehaviour
     [SerializeField, ReadOnly] private List<Card> _cards = new();
     [SerializeField, RequiredMember] private GameObject _cardsHolder;
     [SerializeField, RequiredMember] private Image _avatar;
+    [SerializeField, RequiredMember] private FadeText _statusText;
 
     [SerializeField, RequiredMember] private PlayerType _playerType;
 
@@ -23,6 +24,7 @@ public class PlayerData : MonoBehaviour
     }
     public GameObject CardsHolder => _cardsHolder;
     public Image Avatar => _avatar;
+    public FadeText StatusText => _statusText;
     public PlayerType PlayerType => _playerType;
     public IPlayerLogic Player => _player;
 

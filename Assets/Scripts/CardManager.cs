@@ -9,14 +9,18 @@ using UnityEngine.Scripting;
 
 public class CardManager : MonoBehaviour
 {
-    public static int SUIT_COLORS_N = 4;
-    public static int SUIT_VALUES_N = 13;
-    public static int SUIT_CARDS_DEF_N = SUIT_COLORS_N * SUIT_VALUES_N;
-    public static int OTHER_CARDS_DEF_N = 2;
-    public static int TOTAL_CARDS_N = 108;
-    public static int WILD_NUMBER = 4;
-    public static int WILDDRAW_NUMBER = 4;
-    public static int START_CARDS_N = 7;
+    private static readonly int SUIT_COLORS_N = 4;
+    private static readonly int SUIT_VALUES_N = 13;
+    private static readonly int SUIT_CARDS_DEF_N = SUIT_COLORS_N * SUIT_VALUES_N;
+    private static readonly int OTHER_CARDS_DEF_N = 2;
+    private static readonly int TOTAL_CARDS_N = 108;
+    private static readonly int WILD_NUMBER = 4;
+    private static readonly int WILDDRAW_NUMBER = 4;
+
+    public static readonly int START_CARDS_N = 7;
+    public static readonly int PULL_CARDS_N = 1;
+    public static readonly int DRAW_CARDS_N = 2;
+    public static readonly int WILDDRAW_CARDS_N = 4;
 
 
     [SerializeField, RequiredMember] private SuitCard[] _suitCardsDef;
@@ -39,7 +43,7 @@ public class CardManager : MonoBehaviour
 
     public CardsPull CardsPull => _cardsPull;
     public GameObject ColorPicker => _colorPicker;
-    public SuitColor? CurrentColor
+    private SuitColor? CurrentColor
     {
         get => _currentColor;
         set
@@ -148,19 +152,19 @@ public class CardManager : MonoBehaviour
         if (rotateAround) rotateAround.PlaceCards();
     }
 
-    public void MoveCardToDrop(List<Card> cardsSource, Card card)
+    public void MoveCardToDrop(List<Card> cardsSource, Card card, SuitColor? color)
     {
-        var foundCard = Utils.RemoveAndGetElement(cardsSource, card);
-        CurrentColor = foundCard.Color;
-        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard },
+        Utils.RemoveAndGetElement(cardsSource, card);
+        CurrentColor = card.Type == CardType.other && color != null ? color : card.Color;
+        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { card },
             CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
     }
 
-    public bool TryMoveCardToDrop(List<Card> cardsSource, Card card)
+    public bool TryMoveCardToDrop(List<Card> cardsSource, Card card, SuitColor? color)
     {
         if (IsCardMatchLastDrop(card))
         {
-            MoveCardToDrop(cardsSource, card);
+            MoveCardToDrop(cardsSource, card, color);
             //print("match");
             return true;
         }

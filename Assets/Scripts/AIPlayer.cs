@@ -5,6 +5,7 @@ using UnityEngine;
 class AIPlayer : IPlayerLogic
 {
     private PlayerData _player;
+
     const float MIN_DELAY_MS = 1.5f;
     const float MAX_DELAY_MS = 2.5f;
 
@@ -20,29 +21,22 @@ class AIPlayer : IPlayerLogic
         _player.StartCoroutine(PerfomAction(Random.Range(MIN_DELAY_MS, MAX_DELAY_MS)));
     }
     public void OnEndTurn() { }
-    public void UseCard(Card card) { }
+    public void OnChooseCard(Card card) { }
     public void Uno() { }
 
     IEnumerator PerfomAction(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        //Debug.Log($"Waited for {waitTime}");
         var card = ChooseCard();
+        var color = ChooseColor();
         if (card)
         {
-            GameMaster.Instance.CardManager.MoveCardToDrop(Player.Cards, card);
-            GameMaster.Instance.PlayerManager.PlayCardRule(card);
-            if (card.Type == CardType.other)
-            {
-                GameMaster.Instance.CardManager.CurrentColor = ChooseColor();
-            }
+            GameMaster.Instance.PlayerManager.PlayCard(card, color);
         }
         else
         {
-            // Debug.Log($"{Player.name} Taking new card");
-            GameMaster.Instance.PlayerManager.PullCards(1);
+            GameMaster.Instance.PlayerManager.PullCards(CardManager.PULL_CARDS_N);
         }
-        GameMaster.Instance.PlayerManager.FinishTurn();
     }
 
     Card ChooseCard()

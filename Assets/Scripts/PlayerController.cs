@@ -4,6 +4,7 @@
 /// </summary>
 class PlayerController : IPlayerLogic
 {
+    private Card _choosedCard;
     private PlayerData _player;
 
     public PlayerData Player => _player;
@@ -27,21 +28,21 @@ class PlayerController : IPlayerLogic
         GameMaster.Instance.CardManager.CardsPull.CanClick = false;
     }
 
-    public void UseCard(Card card)
+    public void OnChooseCard(Card card)
     {
-        if (GameMaster.Instance.CardManager.TryMoveCardToDrop(Player.Cards, card))
+        if (GameMaster.Instance.CardManager.IsCardMatchLastDrop(card))
             if (card.Type == CardType.suit)
             {
-                GameMaster.Instance.PlayerManager.PlayCardRule(card);
-                GameMaster.Instance.PlayerManager.FinishTurn();
+                GameMaster.Instance.PlayerManager.PlayCard(card);
             }
             else if (card.Type == CardType.other)
             {
-                WaitForColorToChoose();
+                _choosedCard = card;
+                WaitForChoosingColor();
             }
     }
 
-    void WaitForColorToChoose()
+    void WaitForChoosingColor()
     {
         GameMaster.Instance.CardManager.ColorPicker.SetActive(true);
         GameMaster.Instance.CardManager.CardsPull.CanClick = false;
@@ -51,8 +52,7 @@ class PlayerController : IPlayerLogic
     public void OnChooseColor(SuitColor color)
     {
         GameMaster.Instance.CardManager.ColorPicker.SetActive(false);
-        GameMaster.Instance.CardManager.CurrentColor = color;
-        GameMaster.Instance.PlayerManager.FinishTurn();
+        GameMaster.Instance.PlayerManager.PlayCard(_choosedCard, color);
     }
 
     public void Uno() { }

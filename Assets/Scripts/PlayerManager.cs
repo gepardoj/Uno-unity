@@ -1,10 +1,23 @@
+using System;
 using UnityEngine;
 using UnityEngine.Scripting;
 
 public enum Direction { clockwise, counterClockwise }
 
-public class PlayerManager : MonoBehaviour
+interface IPlayerActions
 {
+    // Three basic actions, player can do, each of them finish turn
+    void PlayCard(Card card, SuitColor? color); // color is used for wild card
+    void PullCards(int amount, bool initiator);
+    void Uno();
+}
+
+public class PlayerManager : MonoBehaviour, IPlayerActions
+{
+    static readonly string SKIP_TEXT = "Skip";
+    static readonly string DRAW_TEXT = "Draw";
+    static readonly string REVERSE_TEXT = "Reverse";
+
     [SerializeField, RequiredMember] private PlayerData[] _players;
     int _currentPlayerIndex = -1;
     private PlayerData _currentPlayer;
@@ -19,22 +32,37 @@ public class PlayerManager : MonoBehaviour
         set { _direction = value; }
     }
 
-    // public actions
-
-    public void UseCard(Card card)
-    {
-        CurrentPlayer.Player.UseCard(card);
-    }
+    ///// public actions
 
     public void StartGame()
     {
-        NextTurn(true);
+        NextTurn();
     }
 
-    public void PullCards(int amount)
+    public void PlayCard(Card card, SuitColor? color = null)
+    {
+        var res = GameMaster.Instance.CardManager.TryMoveCardToDrop(CurrentPlayer.Cards, card, color);
+        if (!res) throw new Exception("The card is not match last drop");
+        PlayCardRule(card);
+        FinishTurn();
+    }
+
+    public void PullCards(int amount, bool initiator = true)
     {
         GameMaster.Instance.CardManager.TakeNewCards(CurrentPlayer, amount,
             CurrentPlayer.PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
+        CurrentPlayer.StatusText.AddPlay($"{DRAW_TEXT} {amount}");
+        if (initiator) FinishTurn();
+    }
+
+    public void Uno()
+    {
+
+    }
+
+    public void OnChooseCard(Card card)
+    {
+        CurrentPlayer.Player.OnChooseCard(card);
     }
 
     public void OnChooseColor(SuitColor color)
@@ -42,25 +70,28 @@ public class PlayerManager : MonoBehaviour
         CurrentPlayer.Player.OnChooseColor(color);
     }
 
-    public void FinishTurn()
+    /// inner methods
+
+    void FinishTurn()
     {
         CurrentPlayer.Player.OnEndTurn();
-        NextTurn(true);
+        NextTurn();
     }
 
-    public void PlayCardRule(Card card)
+    void PlayCardRule(Card card)
     {
         AttemptChangeDirection(card);
         AttemptSkip(card); // order is important
         AttempDraw(card); // for theese two
     }
 
-    // inner methods
-
     void AttemptChangeDirection(Card card)
     {
         if (card.Type == CardType.suit && card.Value == SuitValue.reverse)
+        {
             Direction = Direction == Direction.clockwise ? Direction.counterClockwise : Direction.clockwise;
+            CurrentPlayer.StatusText.AddPlay(REVERSE_TEXT);
+        }
     }
 
     void AttemptSkip(Card card)
@@ -74,16 +105,19 @@ public class PlayerManager : MonoBehaviour
 
     void AttempDraw(Card card)
     {
-        if (card.Type == CardType.suit && card.Value == SuitValue._draw) PullCards(2);
-        else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw) PullCards(4);
+        if (card.Type == CardType.suit && card.Value == SuitValue._draw)
+            PullCards(CardManager.DRAW_CARDS_N, false);
+        else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw)
+            PullCards(CardManager.WILDDRAW_CARDS_N, false);
     }
 
-    void NextTurn(bool getTurn)
+    void NextTurn(bool initiator = true)
     {
         HighlightCurrentPlayer(false);
         NextPlayer();
         HighlightCurrentPlayer(true);
-        if (getTurn) CurrentPlayer.Player.GetTurn();
+        if (initiator) CurrentPlayer.Player.GetTurn();
+        else CurrentPlayer.StatusText.AddPlay(SKIP_TEXT);
     }
 
     void HighlightCurrentPlayer(bool highlight)

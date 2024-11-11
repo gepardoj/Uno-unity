@@ -1,4 +1,5 @@
-- First card to drop should be numeric (not but apply a rule)
+- First card of drop should apply a rule (wilddraw returns back)
+- UNO, winning condition
 - Play animation for moving cards 
 
 - Refactor (do more elegant, logic code)
