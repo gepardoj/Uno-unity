@@ -43,7 +43,7 @@ public class CardManager : MonoBehaviour
 
     public CardsPull CardsPull => _cardsPull;
     public GameObject ColorPicker => _colorPicker;
-    private SuitColor? CurrentColor
+    public SuitColor? CurrentColor
     {
         get => _currentColor;
         set
@@ -65,36 +65,46 @@ public class CardManager : MonoBehaviour
 
         GenerateCards();
         ShuffleCards();
-        PopupUntilSuitCardAndMove();
+        PopupFirstCard();
+
+        /// DEBUG:
+        // var temp = new List<Card>();
+        // CreateAndAddCardTo(temp, CardType.suit, SuitColor.red, SuitValue._draw, null);
+        // CreateAndAddCardTo(temp, CardType.other, null, null, OtherCards.wild);
+        // MoveCardToDrop(temp, temp.First(), null);
         // print($"Available = {_availableCards.Count}");
     }
 
     void GenerateCards()
     {
-        int i = 0;
         foreach (SuitColor color in Enum.GetValues(typeof(SuitColor)))
         {
             foreach (SuitValue value in Enum.GetValues(typeof(SuitValue)))
             {
-                CreateAndAddCardsToPull(CardType.suit, color, value, null, i++);
+                CreateAndAddCardToPull(CardType.suit, color, value, null);
                 if (value != SuitValue._0) // 1 zero value, rests are by 2
                 {
-                    CreateAndAddCardsToPull(CardType.suit, color, value, null, i++);
+                    CreateAndAddCardToPull(CardType.suit, color, value, null);
                 }
             }
         }
-        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAddCardsToPull(CardType.other, null, null, OtherCards.wild, i++);
-        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAddCardsToPull(CardType.other, null, null, OtherCards.wilddraw, i++);
+        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAddCardToPull(CardType.other, null, null, OtherCards.wild);
+        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAddCardToPull(CardType.other, null, null, OtherCards.wilddraw);
 
         if (_availableCards == null || _availableCards.Count != TOTAL_CARDS_N) throw new Exception($"Total cards should be {TOTAL_CARDS_N}, but found {_availableCards.Count}");
     }
 
-    void CreateAndAddCardsToPull(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, int index)
+    void CreateAndAddCardToPull(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
+    {
+        CreateAndAddCardTo(_availableCards, type, color, value, other);
+    }
+
+    void CreateAndAddCardTo(List<Card> cardsDest, CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
     {
         var card = Instantiate(_cardPrefab);
         card.transform.SetParent(transform, false);
         card.Init(type, color, value, other, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
-        _availableCards.Add(card);
+        cardsDest.Add(card);
     }
 
     Sprite GetSpriteInCardsDef(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
@@ -112,13 +122,17 @@ public class CardManager : MonoBehaviour
         _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
     }
 
-    void PopupUntilSuitCardAndMove()
+    /// <summary>
+    ///  Pop a card from the cards stack to the drop. 
+    ///  If Wild Draw found, then it goes to the end of the stack. And next card will popup
+    /// </summary>
+    void PopupFirstCard()
     {
         var i = 0;
         Card foundCard = null;
         foreach (var card in _availableCards)
         {
-            if (card.Type == CardType.suit)
+            if (!card.IsWildDraw)
             {
                 foundCard = card;
                 break;
@@ -180,7 +194,7 @@ public class CardManager : MonoBehaviour
 
     public bool IsCardMatchLastDrop(Card card)
     {
-        if (_dropCards.Count == 0) return true;
+        if (_dropCards.Count == 0) throw new Exception("The drop is empty!");
         var lastCardInDrop = _dropCards.Last();
         if (card.Type == CardType.suit)
         {
@@ -191,5 +205,10 @@ public class CardManager : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public Card GetFirstCardInDrop()
+    {
+        return _dropCards.First();
     }
 }

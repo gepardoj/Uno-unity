@@ -1,4 +1,5 @@
-- First card of drop should apply a rule (wilddraw returns back)
+- Handle empty card stack
+- Special rules
 - UNO, winning condition
 - Play animation for moving cards 
 

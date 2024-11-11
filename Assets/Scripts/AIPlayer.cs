@@ -16,19 +16,20 @@ class AIPlayer : IPlayerLogic
         _player = player;
     }
 
-    public void GetTurn()
+    public void OnGetTurn(bool? shouldDeclareColor)
     {
-        _player.StartCoroutine(PerfomAction(Random.Range(MIN_DELAY_MS, MAX_DELAY_MS)));
+        _player.StartCoroutine(PerfomAction(Random.Range(MIN_DELAY_MS, MAX_DELAY_MS), shouldDeclareColor));
     }
     public void OnEndTurn() { }
     public void OnChooseCard(Card card) { }
     public void Uno() { }
 
-    IEnumerator PerfomAction(float waitTime)
+    IEnumerator PerfomAction(float waitTime, bool? shouldDeclareColor)
     {
         yield return new WaitForSeconds(waitTime);
-        var card = ChooseCard();
         var color = ChooseColor();
+        if (shouldDeclareColor ?? false) GameMaster.Instance.CardManager.CurrentColor = color;
+        var card = ChooseCard();
         if (card)
         {
             GameMaster.Instance.PlayerManager.PlayCard(card, color);
@@ -53,9 +54,11 @@ class AIPlayer : IPlayerLogic
     {
         var colors = Player.Cards.Where(card => card.Color != null);
         colors = colors.DistinctBy(card => card.Color);
-        if (colors.Count() == 0) return Utils.RandomEnum<SuitColor>(); // no suitcards left, choose random color
+        // no suitcards left, choose random color
+        if (colors.Count() == 0) return Utils.RandomEnum<SuitColor>();
+        // choose color from the player's cards
         return (SuitColor)colors.ToArray()[Random.Range(0, colors.Count())].Color;
     }
 
-    public void OnChooseColor(SuitColor color) { }
+    public void OnChosenColor(SuitColor color) { }
 }

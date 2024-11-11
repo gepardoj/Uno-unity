@@ -14,8 +14,13 @@ class PlayerController : IPlayerLogic
         _player = player;
     }
 
-    public void GetTurn()
+    public void OnGetTurn(bool? shouldDeclareColor)
     {
+        if (shouldDeclareColor ?? false)
+        {
+            WaitForChoosingColor();
+            return;
+        }
         var cardsHolder = _player.CardsHolder.GetComponent<MyCardsHolder>();
         cardsHolder.CanClick = true;
         GameMaster.Instance.CardManager.CardsPull.CanClick = true;
@@ -49,10 +54,19 @@ class PlayerController : IPlayerLogic
         Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
     }
 
-    public void OnChooseColor(SuitColor color)
+    public void OnChosenColor(SuitColor color)
     {
         GameMaster.Instance.CardManager.ColorPicker.SetActive(false);
-        GameMaster.Instance.PlayerManager.PlayCard(_choosedCard, color);
+        GameMaster.Instance.CardManager.CardsPull.CanClick = true;
+        Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = true;
+        if (_choosedCard)
+        {
+            GameMaster.Instance.PlayerManager.PlayCard(_choosedCard, color);
+        }
+        else
+        {
+            GameMaster.Instance.CardManager.CurrentColor = color;
+        }
     }
 
     public void Uno() { }

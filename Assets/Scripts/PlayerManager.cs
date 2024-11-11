@@ -19,7 +19,10 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     static readonly string REVERSE_TEXT = "Reverse";
 
     [SerializeField, RequiredMember] private PlayerData[] _players;
-    int _currentPlayerIndex = -1;
+    private bool _isFirstTurn = true;
+    private bool _isFirstColoredAction = false;
+    private Card _firstCard;
+    private int _currentPlayerIndex = -1;
     private PlayerData _currentPlayer;
     private Direction _direction = Direction.clockwise;
 
@@ -36,6 +39,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void StartGame()
     {
+        ApplyFirstCardRule();
         NextTurn();
     }
 
@@ -67,14 +71,36 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void OnChooseColor(SuitColor color)
     {
-        CurrentPlayer.Player.OnChooseColor(color);
+        CurrentPlayer.Player.OnChosenColor(color);
     }
 
-    /// inner methods
+    // inner methods
+
+    // ATTENTION: CURRENT PLAYER IS NULL!
+    void ApplyFirstCardRule()
+    {
+        _firstCard = GameMaster.Instance.CardManager.GetFirstCardInDrop();
+        if (_firstCard.IsWild)
+        {
+            // the first player skips turn and the next player declares the color, and gets turn
+            NextTurn(false);
+        }
+        else if (_firstCard.IsColoredAction)
+        {
+            // apply the effect to the next player, after the first player finishes turn
+            _isFirstColoredAction = true;
+        }
+    }
 
     void FinishTurn()
     {
         CurrentPlayer.Player.OnEndTurn();
+        if (_isFirstColoredAction)
+        {
+            _isFirstColoredAction = false;
+            PlayCardRule(_firstCard);
+        }
+        _isFirstTurn = false;
         NextTurn();
     }
 
@@ -116,7 +142,12 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         HighlightCurrentPlayer(false);
         NextPlayer();
         HighlightCurrentPlayer(true);
-        if (initiator) CurrentPlayer.Player.GetTurn();
+        if (initiator)
+        {
+            var shouldDeclareColor = _isFirstTurn && (_firstCard?.IsWild ?? false);
+            _isFirstTurn = false;
+            CurrentPlayer.Player.OnGetTurn(shouldDeclareColor);
+        }
         else CurrentPlayer.StatusText.AddPlay(SKIP_TEXT);
     }
 

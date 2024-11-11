@@ -24,6 +24,14 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public CardState State => _state;
     public Sprite Sprite => _sprite;
 
+    public bool IsColoredAction
+        => Value == SuitValue.cancel || Value == SuitValue._draw || Value == SuitValue.reverse;
+    public bool IsWild
+        => Other == OtherCards.wild;
+    public bool IsWildDraw
+        => Other == OtherCards.wilddraw;
+
+
     public void Init(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, Sprite sprite, Sprite closedSprite)
     {
         _type = type;
