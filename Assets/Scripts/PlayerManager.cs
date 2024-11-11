@@ -15,8 +15,9 @@ interface IPlayerActions
 public class PlayerManager : MonoBehaviour, IPlayerActions
 {
     static readonly string SKIP_TEXT = "Skip";
-    static readonly string DRAW_TEXT = "Draw";
+    static string DRAW_TEXT(int n) => $"Draw {n}";
     static readonly string REVERSE_TEXT = "Reverse";
+    public static string SHUFFLED_TEXT = "Shuffled cards";
 
     [SerializeField, RequiredMember] private PlayerData[] _players;
     private bool _isFirstTurn = true;
@@ -55,7 +56,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     {
         GameMaster.Instance.CardManager.TakeNewCards(CurrentPlayer, amount,
             CurrentPlayer.PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
-        CurrentPlayer.StatusText.AddPlay($"{DRAW_TEXT} {amount}");
+        CurrentPlayer.StatusText.AddPlay(DRAW_TEXT(amount));
         if (initiator) FinishTurn();
     }
 

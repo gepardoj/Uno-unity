@@ -10,7 +10,7 @@ public static class Utils
         list.Remove(foundEl);
         return foundEl;
     }
-    public static List<T> RemoveAndGetFirstElements<T>(List<T> list, int amount)
+    public static List<T> RemoveAndGetFirstNElements<T>(List<T> list, int amount)
     {
         var foundElements = list.GetRange(0, amount);
         list.RemoveRange(0, amount);

@@ -64,15 +64,23 @@ public class CardManager : MonoBehaviour
         _colorPicker.GetComponent<RotateAround>().PlaceCards();
 
         GenerateCards();
-        ShuffleCards();
+        _availableCards = ShuffleCards(_availableCards);
         PopupFirstCard();
 
-        /// DEBUG:
+        // DEBUG:
+
         // var temp = new List<Card>();
         // CreateAndAddCardTo(temp, CardType.suit, SuitColor.red, SuitValue._draw, null);
         // CreateAndAddCardTo(temp, CardType.other, null, null, OtherCards.wild);
         // MoveCardToDrop(temp, temp.First(), null);
         // print($"Available = {_availableCards.Count}");
+    }
+
+    public void DEBUG_EmptyDeck()
+    {
+        MoveCardsTo(_dropCards, _dropCardsHolder, _availableCards.GetRange(0, _availableCards.Count),
+        CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
+        _availableCards.RemoveRange(0, _availableCards.Count);
     }
 
     void GenerateCards()
@@ -81,20 +89,20 @@ public class CardManager : MonoBehaviour
         {
             foreach (SuitValue value in Enum.GetValues(typeof(SuitValue)))
             {
-                CreateAndAddCardToPull(CardType.suit, color, value, null);
+                CreateAndAddCardToDeck(CardType.suit, color, value, null);
                 if (value != SuitValue._0) // 1 zero value, rests are by 2
                 {
-                    CreateAndAddCardToPull(CardType.suit, color, value, null);
+                    CreateAndAddCardToDeck(CardType.suit, color, value, null);
                 }
             }
         }
-        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAddCardToPull(CardType.other, null, null, OtherCards.wild);
-        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAddCardToPull(CardType.other, null, null, OtherCards.wilddraw);
+        foreach (var _ in Enumerable.Range(1, WILD_NUMBER)) CreateAndAddCardToDeck(CardType.other, null, null, OtherCards.wild);
+        foreach (var _ in Enumerable.Range(1, WILDDRAW_NUMBER)) CreateAndAddCardToDeck(CardType.other, null, null, OtherCards.wilddraw);
 
         if (_availableCards == null || _availableCards.Count != TOTAL_CARDS_N) throw new Exception($"Total cards should be {TOTAL_CARDS_N}, but found {_availableCards.Count}");
     }
 
-    void CreateAndAddCardToPull(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
+    void CreateAndAddCardToDeck(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
     {
         CreateAndAddCardTo(_availableCards, type, color, value, other);
     }
@@ -116,10 +124,10 @@ public class CardManager : MonoBehaviour
         throw new Exception("Cannot be");
     }
 
-    void ShuffleCards()
+    List<Card> ShuffleCards(List<Card> cards)
     {
         var random = new System.Random();
-        _availableCards = _availableCards.OrderBy(card => random.NextDouble()).ToList();
+        return cards.OrderBy(card => random.NextDouble()).ToList();
     }
 
     /// <summary>
@@ -188,8 +196,22 @@ public class CardManager : MonoBehaviour
 
     public void TakeNewCards(PlayerData player, int cardsAmount, CardState cardState)
     {
-        var newCards = Utils.RemoveAndGetFirstElements(_availableCards, cardsAmount); // first N element
+        if (IsDeckEmptyThenShuffle(cardsAmount))
+            player.StatusText.AddPlay(PlayerManager.SHUFFLED_TEXT);
+        var newCards = Utils.RemoveAndGetFirstNElements(_availableCards, cardsAmount); // first N element
         MoveCardsTo(player.Cards, player.CardsHolder, newCards, cardState);
+    }
+
+    bool IsDeckEmptyThenShuffle(int amount)
+    {
+        if (_availableCards.Count < amount)
+        {
+            var cards = Utils.RemoveAndGetFirstNElements(_dropCards, _dropCards.Count - 1);
+            cards = ShuffleCards(cards);
+            MoveCardsTo(_availableCards, gameObject, cards, CardState.closed);
+            return true;
+        }
+        return false;
     }
 
     public bool IsCardMatchLastDrop(Card card)
