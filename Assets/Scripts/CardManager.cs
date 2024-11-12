@@ -21,6 +21,7 @@ public class CardManager : MonoBehaviour
     public static readonly int PULL_CARDS_N = 1;
     public static readonly int DRAW_CARDS_N = 2;
     public static readonly int WILDDRAW_CARDS_N = 4;
+    public static readonly int UNO_PENALTY_N = 2;
 
 
     [SerializeField, RequiredMember] private SuitCard[] _suitCardsDef;

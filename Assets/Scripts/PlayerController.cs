@@ -14,7 +14,7 @@ class PlayerController : IPlayerLogic
         _player = player;
     }
 
-    public void OnGetTurn(bool? shouldDeclareColor)
+    public void OnGetTurn(bool? shouldDeclareColor, bool? prevPlayerSaidUno)
     {
         if (shouldDeclareColor ?? false)
         {
@@ -33,11 +33,12 @@ class PlayerController : IPlayerLogic
         GameMaster.Instance.CardManager.CardsPull.CanClick = false;
     }
 
-    public void OnChooseCard(Card card)
+    public void OnChosenCard(Card card)
     {
         if (GameMaster.Instance.CardManager.IsCardMatchLastDrop(card))
             if (card.Type == CardType.suit)
             {
+                CheckUnoCondition();
                 GameMaster.Instance.PlayerManager.PlayCard(card);
             }
             else if (card.Type == CardType.other)
@@ -61,6 +62,7 @@ class PlayerController : IPlayerLogic
         Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = true;
         if (_choosedCard)
         {
+            CheckUnoCondition();
             GameMaster.Instance.PlayerManager.PlayCard(_choosedCard, color);
         }
         else
@@ -70,4 +72,14 @@ class PlayerController : IPlayerLogic
     }
 
     public void Uno() { }
+
+    void CheckUnoCondition()
+    {
+        // Uno said when penultimate card playing and AI has 50% chance remember to say Uno =) 
+        if (Player.Cards.Count == 2)
+        {
+            Player.SaidUno = false;
+        }
+        else Player.SaidUno = null;
+    }
 }

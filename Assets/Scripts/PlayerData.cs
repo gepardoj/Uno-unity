@@ -15,7 +15,8 @@ public class PlayerData : MonoBehaviour
 
     [SerializeField, RequiredMember] private PlayerType _playerType;
 
-    IPlayerLogic _player; // can be real player or AI player
+    private IPlayerLogic _player; // can be real player or AI player
+    private bool? _saidUno = null;
 
     public List<Card> Cards
     {
@@ -27,6 +28,11 @@ public class PlayerData : MonoBehaviour
     public FadeText StatusText => _statusText;
     public PlayerType PlayerType => _playerType;
     public IPlayerLogic Player => _player;
+    public bool? SaidUno
+    {
+        get => _saidUno;
+        set => _saidUno = value;
+    }
 
     void Start()
     {
@@ -35,5 +41,12 @@ public class PlayerData : MonoBehaviour
 
         if (_playerType == PlayerType.Player) _player = new PlayerController(this);
         else if (_playerType == PlayerType.AI_Player) _player = new AIPlayer(this);
+    }
+
+    public void DrawCards(int amount)
+    {
+        GameMaster.Instance.CardManager.TakeNewCards(this, amount,
+            PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
+        StatusText.AddPlay(PlayerManager.DRAW_TEXT(amount));
     }
 }

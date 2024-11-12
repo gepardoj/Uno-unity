@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 418978006}
   - component: {fileID: 418978008}
   - component: {fileID: 418978007}
+  - component: {fileID: 418978009}
   m_Layer: 0
   m_Name: Uno btn
   m_TagString: Untagged
@@ -590,6 +591,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 418978005}
   m_CullTransparentMesh: 1
+--- !u!114 &418978009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418978005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 447b8f3c40c843c428875f546d800877, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &428932002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1049,7 +1062,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -96.2
+      value: -96.20001
       objectReference: {fileID: 0}
     - target: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2456,7 +2469,7 @@ GameObject:
   - component: {fileID: 1934999447}
   - component: {fileID: 1934999449}
   m_Layer: 5
-  m_Name: Cards Pull
+  m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

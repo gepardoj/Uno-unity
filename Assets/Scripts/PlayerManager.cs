@@ -8,16 +8,19 @@ interface IPlayerActions
 {
     // Three basic actions, player can do, each of them finish turn
     void PlayCard(Card card, SuitColor? color); // color is used for wild card
-    void PullCards(int amount, bool initiator);
+    void DrawCards(int amount, bool initiator);
     void Uno();
+    // Additional
+    void UnoPenalty(); // previous player draw 2 cards
 }
 
 public class PlayerManager : MonoBehaviour, IPlayerActions
 {
     static readonly string SKIP_TEXT = "Skip";
-    static string DRAW_TEXT(int n) => $"Draw {n}";
+    public static string DRAW_TEXT(int n) => $"Draw {n}";
     static readonly string REVERSE_TEXT = "Reverse";
     public static string SHUFFLED_TEXT = "Shuffled cards";
+    public static string UNO_TEXT = "Uno";
 
     [SerializeField, RequiredMember] private PlayerData[] _players;
     private bool _isFirstTurn = true;
@@ -25,11 +28,15 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     private Card _firstCard;
     private int _currentPlayerIndex = -1;
     private PlayerData _currentPlayer;
+    private PlayerData _prevPlayer;
+    private PlayerData _playerController;
     private Direction _direction = Direction.clockwise;
 
     public PlayerData[] Players => _players;
 
     public PlayerData CurrentPlayer => _currentPlayer;
+    public PlayerData PrevPlayer => _prevPlayer;
+    public PlayerData PlayerController => _playerController;
     public Direction Direction
     {
         get { return _direction; }
@@ -40,6 +47,17 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void StartGame()
     {
+        foreach (var player in _players)
+        {
+            if (player.PlayerType == PlayerType.Player)
+            {
+                _playerController = player;
+            }
+        }
+        if (!_playerController)
+        {
+            throw new Exception("Real player not found");
+        }
         ApplyFirstCardRule();
         NextTurn();
     }
@@ -52,22 +70,31 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         FinishTurn();
     }
 
-    public void PullCards(int amount, bool initiator = true)
+    public void DrawCards(int amount, bool initiator = true)
     {
-        GameMaster.Instance.CardManager.TakeNewCards(CurrentPlayer, amount,
-            CurrentPlayer.PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
-        CurrentPlayer.StatusText.AddPlay(DRAW_TEXT(amount));
+        CurrentPlayer.DrawCards(amount);
         if (initiator) FinishTurn();
     }
 
     public void Uno()
     {
+        print($"{_playerController.name} say uno");
+        PlayerController.SaidUno = true;
+        PlayerController.StatusText.AddPlay(UNO_TEXT);
+    }
 
+    public void UnoPenalty()
+    {
+        if (PrevPlayer)
+        {
+            PrevPlayer.DrawCards(CardManager.UNO_PENALTY_N);
+            CurrentPlayer.StatusText.AddPlay(UNO_TEXT);
+        }
     }
 
     public void OnChooseCard(Card card)
     {
-        CurrentPlayer.Player.OnChooseCard(card);
+        CurrentPlayer.Player.OnChosenCard(card);
     }
 
     public void OnChooseColor(SuitColor color)
@@ -133,9 +160,9 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     void AttempDraw(Card card)
     {
         if (card.Type == CardType.suit && card.Value == SuitValue._draw)
-            PullCards(CardManager.DRAW_CARDS_N, false);
+            DrawCards(CardManager.DRAW_CARDS_N, false);
         else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw)
-            PullCards(CardManager.WILDDRAW_CARDS_N, false);
+            DrawCards(CardManager.WILDDRAW_CARDS_N, false);
     }
 
     void NextTurn(bool initiator = true)
@@ -147,7 +174,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         {
             var shouldDeclareColor = _isFirstTurn && (_firstCard?.IsWild ?? false);
             _isFirstTurn = false;
-            CurrentPlayer.Player.OnGetTurn(shouldDeclareColor);
+            CurrentPlayer.Player.OnGetTurn(shouldDeclareColor, PrevPlayer?.SaidUno);
         }
         else CurrentPlayer.StatusText.AddPlay(SKIP_TEXT);
     }
@@ -170,6 +197,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
             _currentPlayerIndex--;
             if (_currentPlayerIndex == -1) _currentPlayerIndex = _players.Length - 1;
         }
+        _prevPlayer = _currentPlayer;
         _currentPlayer = _players[_currentPlayerIndex];
     }
 }

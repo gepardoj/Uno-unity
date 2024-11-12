@@ -1,5 +1,12 @@
 - Special rules
-- UNO, winning condition
+
+- winning condition
+
+*** A player who draws a card from the deck must choose whether to play that card immediately or keep it. No cards already in their hand may be played on that turn.
+
+- A Wild card may be played on any turn, even if the player holding it has cards that will match the current color, number, and/or symbol.
+- A Wild Draw Four card may only be played if the player holding it has no cards matching the current color. The player may have cards of a different color matching the current number/symbol or a Wild card and still play the Wild Draw Four card.[6] A player who plays a Wild Draw Four may be challenged by the next player in sequence (see Penalties) to prove that their hand meets this condition. An illegally played Wild Draw Four card incurs no penalty for its user unless challenged.
+
 - Play animation for moving cards 
 
 - Refactor (do more elegant, logic code)
