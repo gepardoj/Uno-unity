@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class CardsPull : MonoBehaviour, IPointerClickHandler
+public class Deck : MonoBehaviour, IPointerClickHandler
 {
     private bool _canClick = false;
 
@@ -15,7 +15,7 @@ public class CardsPull : MonoBehaviour, IPointerClickHandler
     {
         if (CanClick)
         {
-            GameMaster.Instance.PlayerManager.DrawCards(Const.PULL_CARDS_N);
+            GameMaster.Instance.PlayerManager.DrawCards(Const.DRAW_CARDS_N);
         }
     }
 }

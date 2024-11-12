@@ -1685,7 +1685,7 @@ MonoBehaviour:
   _cardPrefab: {fileID: 3561774769643049993, guid: 81256853bd1e47647a10f32d54244fa8, type: 3}
   _closedSprite: {fileID: 21300000, guid: 9330b452138c2c740b1e811f504bdd14, type: 3}
   _dropCardsHolder: {fileID: 1096159060}
-  _cardsPull: {fileID: 1934999449}
+  _deck: {fileID: 1934999449}
   _colorPicker: {fileID: 1716889007}
   _currentColorText: {fileID: 1329493461}
   _availableCards: []

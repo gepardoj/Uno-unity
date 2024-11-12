@@ -23,14 +23,14 @@ class PlayerController : IPlayerLogic
         }
         var cardsHolder = _player.CardsHolder.GetComponent<MyCardsHolder>();
         cardsHolder.CanClick = true;
-        GameMaster.Instance.CardManager.CardsPull.CanClick = true;
+        GameMaster.Instance.CardManager.Deck.CanClick = true;
         // MonoBehaviour.print($"get turn {cardsHolder.name} {cardsHolder.enabled}");
     }
 
     public void OnEndTurn()
     {
         _player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
-        GameMaster.Instance.CardManager.CardsPull.CanClick = false;
+        GameMaster.Instance.CardManager.Deck.CanClick = false;
     }
 
     public void OnChosenCard(Card card)
@@ -51,14 +51,14 @@ class PlayerController : IPlayerLogic
     void WaitForChoosingColor()
     {
         GameMaster.Instance.CardManager.ColorPicker.SetActive(true);
-        GameMaster.Instance.CardManager.CardsPull.CanClick = false;
+        GameMaster.Instance.CardManager.Deck.CanClick = false;
         Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = false;
     }
 
     public void OnChosenColor(SuitColor color)
     {
         GameMaster.Instance.CardManager.ColorPicker.SetActive(false);
-        GameMaster.Instance.CardManager.CardsPull.CanClick = true;
+        GameMaster.Instance.CardManager.Deck.CanClick = true;
         Player.CardsHolder.GetComponent<MyCardsHolder>().CanClick = true;
         if (_choosedCard)
         {

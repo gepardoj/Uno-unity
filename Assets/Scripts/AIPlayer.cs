@@ -39,7 +39,7 @@ class AIPlayer : IPlayerLogic
         }
         else
         {
-            GameMaster.Instance.PlayerManager.DrawCards(Const.PULL_CARDS_N);
+            GameMaster.Instance.PlayerManager.DrawCards(Const.DRAW_CARDS_N);
         }
     }
 

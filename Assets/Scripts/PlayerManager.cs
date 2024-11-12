@@ -154,7 +154,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     void AttempDraw(Card card)
     {
         if (card.Type == CardType.suit && card.Value == SuitValue._draw)
-            DrawCards(Const.DRAW_CARDS_N, false);
+            DrawCards(Const.SKIP_DRAW_CARDS_N, false);
         else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw)
             DrawCards(Const.WILDDRAW_CARDS_N, false);
     }

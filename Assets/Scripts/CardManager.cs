@@ -20,23 +20,18 @@ public class CardManager : MonoBehaviour
 
     [SerializeField, RequiredMember] private SuitCard[] _suitCardsDef;
     [SerializeField, RequiredMember] private OtherCard[] _otherCardsDef;
-
     [SerializeField, RequiredMember] private Card _cardPrefab;
     [SerializeField, RequiredMember] private Sprite _closedSprite;
-
     [SerializeField, RequiredMember] private GameObject _dropCardsHolder;
-    [SerializeField, RequiredMember] private CardsPull _cardsPull;
-
+    [SerializeField, RequiredMember] private Deck _deck;
     [SerializeField, RequiredMember] private GameObject _colorPicker;
-
     [SerializeField, RequiredMember] private TextMeshProUGUI _currentColorText;
     [SerializeField, ReadOnly] private SuitColor? _currentColor;
-
 
     [SerializeField, ReadOnly] private List<Card> _availableCards = new();
     [SerializeField, ReadOnly] private List<Card> _dropCards = new();
 
-    public CardsPull CardsPull => _cardsPull;
+    public Deck Deck => _deck;
     public GameObject ColorPicker => _colorPicker;
     public SuitColor? CurrentColor
     {
