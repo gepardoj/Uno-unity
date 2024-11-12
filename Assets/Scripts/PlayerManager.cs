@@ -16,12 +16,6 @@ interface IPlayerActions
 
 public class PlayerManager : MonoBehaviour, IPlayerActions
 {
-    static readonly string SKIP_TEXT = "Skip";
-    public static string DRAW_TEXT(int n) => $"Draw {n}";
-    static readonly string REVERSE_TEXT = "Reverse";
-    public static string SHUFFLED_TEXT = "Shuffled cards";
-    public static string UNO_TEXT = "Uno";
-
     [SerializeField, RequiredMember] private PlayerData[] _players;
     private bool _isFirstTurn = true;
     private bool _isFirstColoredAction = false;
@@ -80,15 +74,15 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     {
         print($"{_playerController.name} say uno");
         PlayerController.SaidUno = true;
-        PlayerController.StatusText.AddPlay(UNO_TEXT);
+        PlayerController.StatusText.AddPlay(Const.UNO_TEXT);
     }
 
     public void UnoPenalty()
     {
         if (PrevPlayer)
         {
-            PrevPlayer.DrawCards(CardManager.UNO_PENALTY_N);
-            CurrentPlayer.StatusText.AddPlay(UNO_TEXT);
+            PrevPlayer.DrawCards(Const.UNO_PENALTY_N);
+            CurrentPlayer.StatusText.AddPlay(Const.UNO_TEXT);
         }
     }
 
@@ -144,7 +138,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         if (card.Type == CardType.suit && card.Value == SuitValue.reverse)
         {
             Direction = Direction == Direction.clockwise ? Direction.counterClockwise : Direction.clockwise;
-            CurrentPlayer.StatusText.AddPlay(REVERSE_TEXT);
+            CurrentPlayer.StatusText.AddPlay(Const.REVERSE_TEXT);
         }
     }
 
@@ -160,9 +154,9 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     void AttempDraw(Card card)
     {
         if (card.Type == CardType.suit && card.Value == SuitValue._draw)
-            DrawCards(CardManager.DRAW_CARDS_N, false);
+            DrawCards(Const.DRAW_CARDS_N, false);
         else if (card.Type == CardType.other && card.Other == OtherCards.wilddraw)
-            DrawCards(CardManager.WILDDRAW_CARDS_N, false);
+            DrawCards(Const.WILDDRAW_CARDS_N, false);
     }
 
     void NextTurn(bool initiator = true)
@@ -176,7 +170,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
             _isFirstTurn = false;
             CurrentPlayer.Player.OnGetTurn(shouldDeclareColor, PrevPlayer?.SaidUno);
         }
-        else CurrentPlayer.StatusText.AddPlay(SKIP_TEXT);
+        else CurrentPlayer.StatusText.AddPlay(Const.SKIP_TEXT);
     }
 
     void HighlightCurrentPlayer(bool highlight)

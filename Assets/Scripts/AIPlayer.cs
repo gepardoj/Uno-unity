@@ -39,7 +39,7 @@ class AIPlayer : IPlayerLogic
         }
         else
         {
-            GameMaster.Instance.PlayerManager.DrawCards(CardManager.PULL_CARDS_N);
+            GameMaster.Instance.PlayerManager.DrawCards(Const.PULL_CARDS_N);
         }
     }
 
@@ -96,6 +96,6 @@ class AIPlayer : IPlayerLogic
         yield return new WaitForSeconds(UNO_DELAY);
         Debug.Log($"{Player.name} said uno");
         Player.SaidUno = true;
-        Player.StatusText.AddPlay(PlayerManager.UNO_TEXT);
+        Player.StatusText.AddPlay(Const.UNO_TEXT);
     }
 }

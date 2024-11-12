@@ -36,7 +36,7 @@ public class PlayerData : MonoBehaviour
 
     void Start()
     {
-        GameMaster.Instance.CardManager.TakeNewCards(this, CardManager.START_CARDS_N,
+        GameMaster.Instance.CardManager.TakeNewCards(this, Const.START_CARDS_N,
             _playerType == PlayerType.Player ? CardState.opened : CardState.closed);
 
         if (_playerType == PlayerType.Player) _player = new PlayerController(this);
@@ -47,6 +47,6 @@ public class PlayerData : MonoBehaviour
     {
         GameMaster.Instance.CardManager.TakeNewCards(this, amount,
             PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
-        StatusText.AddPlay(PlayerManager.DRAW_TEXT(amount));
+        StatusText.AddPlay(Const.DRAW_TEXT(amount));
     }
 }

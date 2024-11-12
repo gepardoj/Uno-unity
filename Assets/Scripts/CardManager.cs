@@ -17,12 +17,6 @@ public class CardManager : MonoBehaviour
     private static readonly int WILD_NUMBER = 4;
     private static readonly int WILDDRAW_NUMBER = 4;
 
-    public static readonly int START_CARDS_N = 7;
-    public static readonly int PULL_CARDS_N = 1;
-    public static readonly int DRAW_CARDS_N = 2;
-    public static readonly int WILDDRAW_CARDS_N = 4;
-    public static readonly int UNO_PENALTY_N = 2;
-
 
     [SerializeField, RequiredMember] private SuitCard[] _suitCardsDef;
     [SerializeField, RequiredMember] private OtherCard[] _otherCardsDef;
@@ -198,7 +192,7 @@ public class CardManager : MonoBehaviour
     public void TakeNewCards(PlayerData player, int cardsAmount, CardState cardState)
     {
         if (IsDeckEmptyThenShuffle(cardsAmount))
-            player.StatusText.AddPlay(PlayerManager.SHUFFLED_TEXT);
+            player.StatusText.AddPlay(Const.SHUFFLED_TEXT);
         var newCards = Utils.RemoveAndGetFirstNElements(_availableCards, cardsAmount); // first N element
         MoveCardsTo(player.Cards, player.CardsHolder, newCards, cardState);
     }
