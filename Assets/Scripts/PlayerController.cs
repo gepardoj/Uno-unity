@@ -71,8 +71,6 @@ class PlayerController : IPlayerLogic
         }
     }
 
-    public void Uno() { }
-
     void CheckUnoCondition()
     {
         // Uno said when penultimate card playing and AI has 50% chance remember to say Uno =) 

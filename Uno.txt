@@ -1,7 +1,8 @@
 - Special rules
 
-*** Force prev AI to draw cards by Player said UNO
+*** FirstCardRule: When player get Wild card should declare color (UI)
 *** Bug with all players got highlighted
+*** Win wasnt encountered
 
 *** A player who draws a card from the deck must choose whether to play that card immediately or keep it. No cards already in their hand may be played on that turn.
 

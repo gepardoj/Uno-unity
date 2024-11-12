@@ -43,7 +43,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     public void StartGame()
     {
         _linkedPlayers = new LinkedList<PlayerData>(_players);
-        _currentPlayerNode = _linkedPlayers.First;
+        // _currentPlayerNode = _linkedPlayers.First;
         foreach (var player in _players)
         {
             if (player.PlayerType == PlayerType.Player)
@@ -55,9 +55,13 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         {
             throw new Exception("Real player not found");
         }
-        ApplyFirstCardRule();
-        CurrentPlayer.Avatar.Highlight(true);
-        CurrentPlayer.Player.OnGetTurn();
+        var res = ApplyFirstCardRule();
+        // if (res)
+        NextTurn();
+        // {
+        //     CurrentPlayer.Avatar.Highlight(true);
+        //     CurrentPlayer.Player.OnGetTurn();
+        // }
     }
 
     public void PlayCard(Card card, SuitColor? color = null)
@@ -76,15 +80,18 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void Uno()
     {
-        print($"{_realPlayer.name} say uno");
         RealPlayer.SaidUno = true;
-        RealPlayer.StatusText.AddPlay(Const.UNO_TEXT);
+        if (PrevPlayer.SaidUno != null && PrevPlayer.SaidUno == false)
+        {
+            UnoPenalty();
+        }
     }
 
     public void UnoPenalty()
     {
         if (PrevPlayer)
         {
+            PrevPlayer.SaidUno = null;
             PrevPlayer.DrawCards(Const.UNO_PENALTY_N);
             CurrentPlayer.StatusText.AddPlay(Const.UNO_TEXT);
         }
@@ -103,19 +110,21 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     // inner methods
 
     // ATTENTION: CURRENT PLAYER IS NULL!
-    void ApplyFirstCardRule()
+    bool ApplyFirstCardRule()
     {
         _firstCard = GameMaster.Instance.CardManager.GetFirstCardInDrop();
         if (_firstCard.IsWild)
         {
             // the first player skips turn and the next player declares the color, and gets turn
             NextTurn(false);
+            return false;
         }
         else if (_firstCard.IsColoredAction)
         {
             // apply the effect to the next player, after the first player finishes turn
             _isFirstColoredAction = true;
         }
+        return true;
     }
 
     void FinishTurn()
@@ -203,11 +212,11 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     {
         if (Direction == Direction.clockwise)
         {
-            _currentPlayerNode = _currentPlayerNode.Next ?? _linkedPlayers.First;
+            _currentPlayerNode = _currentPlayerNode?.Next ?? _linkedPlayers.First;
         }
         else if (Direction == Direction.counterClockwise)
         {
-            _currentPlayerNode = _currentPlayerNode.Previous ?? _linkedPlayers.Last;
+            _currentPlayerNode = _currentPlayerNode?.Previous ?? _linkedPlayers.Last;
         }
         print($"current player is [{_currentPlayerNode.Value.name}]");
     }

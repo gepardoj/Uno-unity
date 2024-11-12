@@ -23,7 +23,6 @@ class AIPlayer : IPlayerLogic
     }
     public void OnEndTurn() { }
     public void OnChosenCard(Card card) { }
-    public void Uno() { }
 
     IEnumerator PerfomAction(float waitTime, bool? shouldDeclareColor, bool? prevPlayerSaidUno)
     {

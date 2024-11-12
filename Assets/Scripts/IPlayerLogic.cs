@@ -9,6 +9,5 @@ public interface IPlayerLogic
     void OnGetTurn(bool? shouldDeclareColor = null, bool? prevPlayerSaidUno = null);
     void OnEndTurn();
     void OnChosenCard(Card card);
-    void Uno();
     void OnChosenColor(SuitColor color);
 }
