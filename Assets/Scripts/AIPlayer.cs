@@ -32,9 +32,9 @@ class AIPlayer : IPlayerLogic
         var color = ChooseColor();
         if (shouldDeclareColor ?? false) GameMaster.Instance.CardManager.CurrentColor = color;
         var card = ChooseCard();
-        CheckUnoCondition();
         if (card)
         {
+            CheckUnoCondition();
             GameMaster.Instance.PlayerManager.PlayCard(card, color);
         }
         else

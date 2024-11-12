@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -17,21 +18,20 @@ interface IPlayerActions
 public class PlayerManager : MonoBehaviour, IPlayerActions
 {
     [SerializeField, RequiredMember] private PlayerData[] _players;
-    // [SerializeField, RequiredMember] private LinkedList<PlayerData> _players2;
+    private LinkedList<PlayerData> _linkedPlayers;
     private bool _isFirstTurn = true;
     private bool _isFirstColoredAction = false;
     private Card _firstCard;
-    private int _currentPlayerIndex = -1;
-    private PlayerData _currentPlayer;
-    private PlayerData _prevPlayer;
-    private PlayerData _playerController;
+    private LinkedListNode<PlayerData> _currentPlayerNode = null;
+    private PlayerData _realPlayer;
     private Direction _direction = Direction.clockwise;
 
-    public PlayerData[] Players => _players;
+    public LinkedList<PlayerData> Players => _linkedPlayers;
 
-    public PlayerData CurrentPlayer => _currentPlayer;
-    public PlayerData PrevPlayer => _prevPlayer;
-    public PlayerData PlayerController => _playerController;
+    public PlayerData CurrentPlayer => _currentPlayerNode.Value;
+    public PlayerData PrevPlayer => _currentPlayerNode.Previous?.Value ?? _linkedPlayers.Last.Value;
+    public PlayerData NextPlayer => _currentPlayerNode.Next?.Value ?? _linkedPlayers.First.Value;
+    public PlayerData RealPlayer => _realPlayer;
     public Direction Direction
     {
         get { return _direction; }
@@ -42,19 +42,22 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void StartGame()
     {
+        _linkedPlayers = new LinkedList<PlayerData>(_players);
+        _currentPlayerNode = _linkedPlayers.First;
         foreach (var player in _players)
         {
             if (player.PlayerType == PlayerType.Player)
             {
-                _playerController = player;
+                _realPlayer = player;
             }
         }
-        if (!_playerController)
+        if (!_realPlayer)
         {
             throw new Exception("Real player not found");
         }
         ApplyFirstCardRule();
-        NextTurn();
+        CurrentPlayer.Avatar.Highlight(true);
+        CurrentPlayer.Player.OnGetTurn();
     }
 
     public void PlayCard(Card card, SuitColor? color = null)
@@ -73,9 +76,9 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void Uno()
     {
-        print($"{_playerController.name} say uno");
-        PlayerController.SaidUno = true;
-        PlayerController.StatusText.AddPlay(Const.UNO_TEXT);
+        print($"{_realPlayer.name} say uno");
+        RealPlayer.SaidUno = true;
+        RealPlayer.StatusText.AddPlay(Const.UNO_TEXT);
     }
 
     public void UnoPenalty()
@@ -125,24 +128,29 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         }
         _isFirstTurn = false;
 
-        // WinCondition();
+        WinCondition();
         NextTurn();
     }
 
-    // void WinCondition()
-    // {
-    //     if (CurrentPlayer.Cards.Count == 0)
-    //     {
-    //         DetachPlayer();
-    //         CurrentPlayer.StatusText.AddPlay(Const.WIN_TEXT);
-    //         CurrentPlayer.Avatar.Play();
-    //     }
-    // }
+    void WinCondition()
+    {
+        if (CurrentPlayer.Cards.Count == 0)
+        {
+            DetachPlayer();
+            CurrentPlayer.StatusText.AddPlay(Const.WIN_TEXT);
+            CurrentPlayer.Avatar.Play();
+            if (CurrentPlayer == RealPlayer)
+            {
+                GameMaster.Instance.OnWin();
+            }
+        }
+    }
 
-    // void DetachPlayer()
-    // {
-    //     Players.Remove(CurrentPlayer);
-    // }
+    void DetachPlayer()
+    {
+        var res = Players.Remove(CurrentPlayer);
+        if (!res) throw new Exception($"Failed to remove player {CurrentPlayer.name}");
+    }
 
     void PlayCardRule(Card card)
     {
@@ -179,9 +187,9 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     void NextTurn(bool initiator = true)
     {
-        HighlightCurrentPlayer(false);
-        NextPlayer();
-        HighlightCurrentPlayer(true);
+        IterateNextPlayer();
+        PrevPlayer.Avatar.Highlight(false);
+        CurrentPlayer.Avatar.Highlight(true);
         if (initiator)
         {
             var shouldDeclareColor = _isFirstTurn && (_firstCard?.IsWild ?? false);
@@ -191,25 +199,16 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
         else CurrentPlayer.StatusText.AddPlay(Const.SKIP_TEXT);
     }
 
-    void HighlightCurrentPlayer(bool highlight)
-    {
-        if (CurrentPlayer == null) return;
-        CurrentPlayer.Avatar.Highlight(highlight);
-    }
-
-    void NextPlayer()
+    void IterateNextPlayer()
     {
         if (Direction == Direction.clockwise)
         {
-            _currentPlayerIndex++;
-            if (_currentPlayerIndex == _players.Length) _currentPlayerIndex = 0;
+            _currentPlayerNode = _currentPlayerNode.Next ?? _linkedPlayers.First;
         }
         else if (Direction == Direction.counterClockwise)
         {
-            _currentPlayerIndex--;
-            if (_currentPlayerIndex == -1) _currentPlayerIndex = _players.Length - 1;
+            _currentPlayerNode = _currentPlayerNode.Previous ?? _linkedPlayers.Last;
         }
-        _prevPlayer = _currentPlayer;
-        _currentPlayer = _players[_currentPlayerIndex];
+        print($"current player is [{_currentPlayerNode.Value.name}]");
     }
 }

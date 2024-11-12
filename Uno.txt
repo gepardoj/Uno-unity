@@ -1,6 +1,7 @@
 - Special rules
 
-- winning condition
+*** Force prev AI to draw cards by Player said UNO
+*** Bug with all players got highlighted
 
 *** A player who draws a card from the deck must choose whether to play that card immediately or keep it. No cards already in their hand may be played on that turn.
 

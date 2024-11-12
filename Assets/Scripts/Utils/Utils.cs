@@ -17,10 +17,12 @@ public static class Utils
         return foundElements;
     }
 
-    public static T RandomEnum<T>()
+    public static T RandomEnum<T>() where T : Enum
     {
         var length = Enum.GetNames(typeof(T)).Length;
-        return (T)Convert.ChangeType(UnityEngine.Random.Range(0, length), typeof(T));
+        var value = UnityEngine.Random.Range(0, length);
+        if (!Enum.IsDefined(typeof(T), value)) throw new Exception($"Invalid enum value {value}");
+        return (T)Convert.ChangeType(value, typeof(int));
     }
 
     public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> items, Func<T, TKey> property)

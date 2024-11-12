@@ -6,7 +6,7 @@ public interface IPlayerLogic
     /// </summary>
     /// <param name="shouldDeclareColor"></param>
     /// <param name="prevPlayerSaidUno">Null if there's no need to check condition</param>
-    void OnGetTurn(bool? shouldDeclareColor, bool? prevPlayerSaidUno);
+    void OnGetTurn(bool? shouldDeclareColor = null, bool? prevPlayerSaidUno = null);
     void OnEndTurn();
     void OnChosenCard(Card card);
     void Uno();
