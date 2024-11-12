@@ -328,7 +328,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cards: []
   _cardsHolder: {fileID: 162909241}
-  _avatar: {fileID: 1660088025}
+  _avatar: {fileID: 0}
   _statusText: {fileID: 1423299229}
   _playerType: 0
 --- !u!4 &189536725
@@ -634,7 +634,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cards: []
   _cardsHolder: {fileID: 396139393}
-  _avatar: {fileID: 904867334}
+  _avatar: {fileID: 0}
   _statusText: {fileID: 1824746213}
   _playerType: 1
 --- !u!4 &428932004
@@ -683,7 +683,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cards: []
   _cardsHolder: {fileID: 1399784676}
-  _avatar: {fileID: 1640844151}
+  _avatar: {fileID: 0}
   _statusText: {fileID: 110583725}
   _playerType: 1
 --- !u!4 &499271347
@@ -1148,6 +1148,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7114062601669491062, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.y
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7487065032475992036, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.9723115
@@ -1228,17 +1232,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
   m_PrefabInstance: {fileID: 904867332}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &904867334 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2060945935717907347, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
-  m_PrefabInstance: {fileID: 904867332}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1047896887 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1011838292158821842, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
@@ -1713,6 +1706,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1657822491}
     m_Modifications:
+    - target: {fileID: 431776170832614298, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.x
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 431776170832614298, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 587045038663013022, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_Name
       value: Example card
@@ -2017,6 +2018,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -8.57
       objectReference: {fileID: 0}
+    - target: {fileID: 7114062601669491062, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.x
+      value: -0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7487065032475992036, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.96478635
@@ -2097,17 +2102,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
   m_PrefabInstance: {fileID: 1640844149}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1640844151 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2060945935717907347, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
-  m_PrefabInstance: {fileID: 1640844149}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1657822490
 GameObject:
   m_ObjectHideFlags: 0
@@ -2227,6 +2221,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1657822491}
     m_Modifications:
+    - target: {fileID: 431776170832614298, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.y
+      value: -0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2311,6 +2309,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 7114062601669491062, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.y
+      value: -0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8484030358689785404, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_Name
       value: Player Status
@@ -2329,17 +2331,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
   m_PrefabInstance: {fileID: 1660088023}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1660088025 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2060945935717907347, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
-  m_PrefabInstance: {fileID: 1660088023}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1716889007
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,7 +2429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cards: []
   _cardsHolder: {fileID: 1482124892}
-  _avatar: {fileID: 2066563945}
+  _avatar: {fileID: 0}
   _statusText: {fileID: 1047896887}
   _playerType: 1
 --- !u!4 &1832182699
@@ -2641,6 +2632,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1657822491}
     m_Modifications:
+    - target: {fileID: 431776170832614298, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 431776170832614298, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 711062260115824483, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -2801,6 +2800,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Player 4
       objectReference: {fileID: 0}
+    - target: {fileID: 7114062601669491062, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
+      propertyPath: _direction.x
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 8358477471792609879, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
       propertyPath: m_Name
       value: Right opponent cards holder
@@ -2825,17 +2828,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2955501572805945801, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
   m_PrefabInstance: {fileID: 2066563943}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2066563945 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2060945935717907347, guid: f6cfc4049b3da314fb29b9fb86455718, type: 3}
-  m_PrefabInstance: {fileID: 2066563943}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2107132198
 GameObject:
   m_ObjectHideFlags: 0

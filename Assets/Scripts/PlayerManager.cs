@@ -17,6 +17,7 @@ interface IPlayerActions
 public class PlayerManager : MonoBehaviour, IPlayerActions
 {
     [SerializeField, RequiredMember] private PlayerData[] _players;
+    // [SerializeField, RequiredMember] private LinkedList<PlayerData> _players2;
     private bool _isFirstTurn = true;
     private bool _isFirstColoredAction = false;
     private Card _firstCard;
@@ -123,8 +124,25 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
             PlayCardRule(_firstCard);
         }
         _isFirstTurn = false;
+
+        // WinCondition();
         NextTurn();
     }
+
+    // void WinCondition()
+    // {
+    //     if (CurrentPlayer.Cards.Count == 0)
+    //     {
+    //         DetachPlayer();
+    //         CurrentPlayer.StatusText.AddPlay(Const.WIN_TEXT);
+    //         CurrentPlayer.Avatar.Play();
+    //     }
+    // }
+
+    // void DetachPlayer()
+    // {
+    //     Players.Remove(CurrentPlayer);
+    // }
 
     void PlayCardRule(Card card)
     {
@@ -176,7 +194,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     void HighlightCurrentPlayer(bool highlight)
     {
         if (CurrentPlayer == null) return;
-        CurrentPlayer.Avatar.color = highlight ? Color.yellow : Color.white;
+        CurrentPlayer.Avatar.Highlight(highlight);
     }
 
     void NextPlayer()

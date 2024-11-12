@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Scripting;
-using UnityEngine.UI;
 
 public enum PlayerType { Player, AI_Player }
 
@@ -10,7 +9,7 @@ public class PlayerData : MonoBehaviour
 {
     [SerializeField, ReadOnly] private List<Card> _cards = new();
     [SerializeField, RequiredMember] private GameObject _cardsHolder;
-    [SerializeField, RequiredMember] private Image _avatar;
+    [SerializeField, RequiredMember] private AvatarPlayer _avatar;
     [SerializeField, RequiredMember] private FadeText _statusText;
 
     [SerializeField, RequiredMember] private PlayerType _playerType;
@@ -24,7 +23,7 @@ public class PlayerData : MonoBehaviour
         set => _cards = value;
     }
     public GameObject CardsHolder => _cardsHolder;
-    public Image Avatar => _avatar;
+    public AvatarPlayer Avatar => _avatar;
     public FadeText StatusText => _statusText;
     public PlayerType PlayerType => _playerType;
     public IPlayerLogic Player => _player;
