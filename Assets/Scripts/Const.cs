@@ -13,3 +13,10 @@ public static class Const
     public static readonly int WILDDRAW_CARDS_N = 4;
     public static readonly int UNO_PENALTY_N = 2;
 }
+
+public static class Scene
+{
+    public static readonly string MENU = "MenuScene";
+    public static readonly string SINGLEPLAYER = "SingleplayerScene";
+    public static readonly string MULTIPLAYER = "MultiplayerScene";
+}
