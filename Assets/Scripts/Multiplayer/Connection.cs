@@ -9,21 +9,30 @@ public class Connection : MonoBehaviour
 
     WebSocket websocket;
 
-    void Start()
+    void Awake()
     {
-        if (_instance == null) _instance = this;
-        else { if (_instance != this) Destroy(gameObject); }
-
+        if (_instance == null)
+        {
+            print("connection instance is initialized");
+            _instance = this;
+        }
+        else
+        {
+            if (_instance != this)
+            {
+                print("connection instance is already initialized, deleting...");
+                Destroy(gameObject);
+            }
+        }
         _api = GetComponent<API>();
     }
-
 
     public async void Init()
     {
         if (websocket == null)
         {
             print("init websocket");
-            websocket = new WebSocket("ws://localhost:3000");
+            websocket = new WebSocket("ws://192.168.1.13:3000");
             websocket.OnOpen += () =>
             {
                 print($"connection open");
@@ -58,7 +67,7 @@ public class Connection : MonoBehaviour
     void Update()
     {
 #if !UNITY_WEBGL || UNITY_EDITOR
-        websocket.DispatchMessageQueue();
+        websocket?.DispatchMessageQueue();
 #endif
     }
 

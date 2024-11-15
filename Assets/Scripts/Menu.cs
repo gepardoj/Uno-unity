@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -51,11 +52,17 @@ public class Menu : MonoBehaviour
 
     public void OnLobby()
     {
-        Connection.Instance.Init();
         _image.color = _mainColor;
         _status.text = _lobbyText;
         _mainBlock.SetActive(false);
         _lobbyBlock.SetActive(true);
+        StartCoroutine(Connect());
+    }
+
+    IEnumerator Connect()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Connection.Instance.Init();
     }
 
     public void Singleplayer()
