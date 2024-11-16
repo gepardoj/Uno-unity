@@ -1,33 +1,29 @@
 using NativeWebSocket;
-using UnityEngine;
 
-public class Connection : MonoBehaviour
+public class Connection : API
 {
     private static Connection _instance;
-    private API _api;
     public static Connection Instance => _instance;
 
     WebSocket websocket;
 
-    void Awake()
+    void Start()
     {
         if (_instance == null)
         {
-            print("connection instance is initialized");
+            print("Connection:: instance is initialized");
             _instance = this;
+            Init();
+            DontDestroyOnLoad(gameObject);
         }
-        else
+        else if (_instance != this)
         {
-            if (_instance != this)
-            {
-                print("connection instance is already initialized, deleting...");
-                Destroy(gameObject);
-            }
+            print("Connection:: instance is already initialized, deleting another one...");
+            Destroy(gameObject);
         }
-        _api = GetComponent<API>();
     }
 
-    public async void Init()
+    public void Init()
     {
         if (websocket == null)
         {
@@ -37,31 +33,31 @@ public class Connection : MonoBehaviour
             {
                 print($"connection open");
             };
-
             websocket.OnError += (e) =>
             {
                 print($"error! {e}");
             };
-
             websocket.OnClose += (e) =>
             {
                 print("connection closed");
             };
-
-            websocket.OnMessage += _api.OnMessage;
-
-            InvokeRepeating(nameof(SendWebSocketMessage), 0.0f, 0.3f);
+            websocket.OnMessage += OnMessage;
         }
         else
         {
             print("websocket already initialized");
         }
-        await websocket.Connect();
+    }
+
+    public void AttemptConnect()
+    {
+        if (websocket != null && websocket.State != WebSocketState.Open)
+            websocket.Connect();
     }
 
     public void Close()
     {
-        websocket.Close();
+        websocket?.Close();
     }
 
     void Update()
@@ -71,17 +67,8 @@ public class Connection : MonoBehaviour
 #endif
     }
 
-    async void SendWebSocketMessage()
+    void OnApplicationQuit()
     {
-        if (websocket.State == WebSocketState.Open)
-        {
-            await websocket.Send(new byte[] { 10, 20, 30 });
-            await websocket.SendText("plain text message");
-        }
-    }
-
-    private async void OnApplicationQuit()
-    {
-        await websocket.Close();
+        Close();
     }
 }

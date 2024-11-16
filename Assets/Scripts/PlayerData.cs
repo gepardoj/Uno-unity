@@ -35,9 +35,11 @@ public class PlayerData : MonoBehaviour
 
     void Start()
     {
-        GameMaster.Instance.CardManager.TakeNewCards(this, Const.START_CARDS_N,
+        if (Scene.IsSinglePlayer())
+        {
+            GameMaster.Instance.CardManager.TakeNewCards(this, Const.START_CARDS_N,
             _playerType == PlayerType.Player ? CardState.opened : CardState.closed);
-
+        }
         if (_playerType == PlayerType.Player) _player = new PlayerController(this);
         else if (_playerType == PlayerType.AI_Player) _player = new AIPlayer(this);
     }

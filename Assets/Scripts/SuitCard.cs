@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Suit", menuName = "Cards/Suit card", order = 1)]
-class SuitCard : ScriptableObject
+public class SuitCard : ScriptableObject
 {
     [SerializeField] private SuitColor _color;
     [SerializeField] private SuitValue _value;

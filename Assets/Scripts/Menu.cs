@@ -56,13 +56,7 @@ public class Menu : MonoBehaviour
         _status.text = _lobbyText;
         _mainBlock.SetActive(false);
         _lobbyBlock.SetActive(true);
-        StartCoroutine(Connect());
-    }
-
-    IEnumerator Connect()
-    {
-        yield return new WaitForSeconds(0.5f);
-        Connection.Instance.Init();
+        Connection.Instance.AttemptConnect();
     }
 
     public void Singleplayer()
@@ -74,7 +68,6 @@ public class Menu : MonoBehaviour
     {
         state = MenuState.lobby;
         OnLobby();
-        //SceneManager.LoadScene(Scene.MULTIPLAYER);
     }
 
     public void BackFromLobby()

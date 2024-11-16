@@ -32,14 +32,14 @@ public class Card : MonoBehaviour, IPointerClickHandler
         => Other == OtherCards.wilddraw;
 
 
-    public void Init(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, Sprite sprite, Sprite closedSprite)
+    public void Init(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, Sprite sprite, Sprite closedSprite)
     {
         _type = type;
         _color = color;
         _value = value;
         _other = other;
         _sprite = sprite;
-        _state = CardState.closed;
+        _state = state;
         SetStateAndSprite(_state, closedSprite);
     }
 
