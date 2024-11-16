@@ -9,6 +9,7 @@ public enum Endpoints : byte
     playersInLobby,
     startGame,
     getCardsInHand,
+    moveCardToDiscardPile,
 }
 
 public class API : MonoBehaviour
@@ -23,6 +24,7 @@ public class API : MonoBehaviour
         if (endpoint == Endpoints.playersInLobby) OnPlayersInLobby(data);
         else if (endpoint == Endpoints.startGame) OnStartGame();
         else if (endpoint == Endpoints.getCardsInHand) StartCoroutine(OnGetCardsInHand(data));
+        else if (endpoint == Endpoints.moveCardToDiscardPile) StartCoroutine(OnMoveCardToDiscardPile(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -64,5 +66,22 @@ public class API : MonoBehaviour
             (byte)other == 255 ? null : other,
             state);
         }
+    }
+
+    IEnumerator OnMoveCardToDiscardPile(byte[] data)
+    {
+        while (!MultiplayerGame.Instance) yield return null;
+        var offset = 1;
+        var type = (CardType)data[offset++];
+        var color = (SuitColor)data[offset++];
+        var value = (SuitValue)data[offset++];
+        var other = (OtherCards)data[offset++];
+        var state = (CardState)data[offset++];
+        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(type,
+            (byte)color == 255 ? null : color,
+            (byte)value == 255 ? null : value,
+            (byte)other == 255 ? null : other,
+            state
+        );
     }
 }

@@ -47,7 +47,7 @@ class AIPlayer : IPlayerLogic
         var cardManager = GameMaster.Instance.CardManager;
         foreach (var card in Player.Cards)
         {
-            if (cardManager.IsCardMatchLastDrop(card)) return card;
+            if (cardManager.IsCardMatchLastInDiscardPile(card)) return card;
         }
         return null;
     }

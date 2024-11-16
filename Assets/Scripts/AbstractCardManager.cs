@@ -18,7 +18,7 @@ public class AbstractCardManager : MonoBehaviour
     [SerializeField, RequiredMember] protected OtherCard[] _otherCardsDef;
     [SerializeField, RequiredMember] protected Card _cardPrefab;
     [SerializeField, RequiredMember] protected Sprite _closedSprite;
-    [SerializeField, RequiredMember] protected GameObject _dropCardsHolder;
+    [SerializeField, RequiredMember] protected GameObject _discardPile;
     [SerializeField, RequiredMember] protected Deck _deck;
     [SerializeField, RequiredMember] protected GameObject _colorPicker;
     [SerializeField, RequiredMember] protected TextMeshProUGUI _currentColorText;
@@ -33,16 +33,23 @@ public class AbstractCardManager : MonoBehaviour
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
     }
 
+    protected void CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation)
+    {
+        var card = Instantiate(_cardPrefab);
+        card.Init(type, color, value, other, state, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
+        MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation);
+    }
+
     /// <summary>
     /// Does not remove cards from source
     /// </summary>
-    protected void MoveCardsTo(List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState cardState,
+    protected void MoveCardsTo([Optional] List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState state,
       [Optional] Vector3 rotation)
     {
         foreach (var card in newCards)
         {
-            cardsDest.Add(card);
-            card.SetStateAndSprite(cardState, _closedSprite);
+            cardsDest?.Add(card);
+            card.SetStateAndSprite(state, _closedSprite);
             card.transform.SetParent(cardsHolder.transform, false);
             card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(rotation));
         }

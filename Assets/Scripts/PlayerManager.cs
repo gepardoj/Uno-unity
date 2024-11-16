@@ -112,7 +112,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
     // ATTENTION: CURRENT PLAYER IS NULL!
     bool ApplyFirstCardRule()
     {
-        _firstCard = GameMaster.Instance.CardManager.GetFirstCardInDrop();
+        _firstCard = GameMaster.Instance.CardManager.GetFirstCardInDiscardPile();
         if (_firstCard.IsWild)
         {
             // the first player skips turn and the next player declares the color, and gets turn

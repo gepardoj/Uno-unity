@@ -35,7 +35,7 @@ class PlayerController : IPlayerLogic
 
     public void OnChosenCard(Card card)
     {
-        if (GameMaster.Instance.CardManager.IsCardMatchLastDrop(card))
+        if (GameMaster.Instance.CardManager.IsCardMatchLastInDiscardPile(card))
             if (card.Type == CardType.suit)
             {
                 CheckUnoCondition();

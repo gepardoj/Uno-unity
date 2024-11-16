@@ -11,7 +11,7 @@ public class CardManager : AbstractCardManager
     private static readonly int WILDDRAW_NUMBER = 4;
 
     [SerializeField, ReadOnly] private List<Card> _availableCards = new();
-    [SerializeField, ReadOnly] private List<Card> _dropCards = new();
+    [SerializeField, ReadOnly] private List<Card> _discardedCards = new();
 
     public Deck Deck => _deck;
     public GameObject ColorPicker => _colorPicker;
@@ -45,7 +45,7 @@ public class CardManager : AbstractCardManager
 
     public void DEBUG_EmptyDeck()
     {
-        MoveCardsTo(_dropCards, _dropCardsHolder, _availableCards.GetRange(0, _availableCards.Count),
+        MoveCardsTo(_discardedCards, _discardPile, _availableCards.GetRange(0, _availableCards.Count),
         CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
         _availableCards.RemoveRange(0, _availableCards.Count);
     }
@@ -72,15 +72,7 @@ public class CardManager : AbstractCardManager
 
     void CreateAndAddCardToDeck(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
     {
-        CreateAndAddCardTo(_availableCards, type, color, value, other);
-    }
-
-    void CreateAndAddCardTo(List<Card> cardsDest, CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
-    {
-        var card = Instantiate(_cardPrefab);
-        card.transform.SetParent(transform, false);
-        card.Init(type, color, value, other, CardState.closed, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
-        cardsDest.Add(card);
+        CreateCardAndAddTo(_availableCards, gameObject, type, color, value, other, CardState.closed);
     }
 
     List<Card> ShuffleCards(List<Card> cards)
@@ -113,22 +105,22 @@ public class CardManager : AbstractCardManager
             _availableCards.AddRange(cards);
         }
         CurrentColor = foundCard.Color;
-        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { foundCard }, CardState.opened);
+        MoveCardsTo(_discardedCards, _discardPile, new Card[] { foundCard }, CardState.opened);
     }
 
-    public void MoveCardToDrop(List<Card> cardsSource, Card card, SuitColor? color)
+    public void RemAndMoveCardToDiscardPile(List<Card> cardsSource, Card card, SuitColor? color)
     {
         Utils.RemoveAndGetElement(cardsSource, card);
         CurrentColor = card.Type == CardType.other && color != null ? color : card.Color;
-        MoveCardsTo(_dropCards, _dropCardsHolder, new Card[] { card },
+        MoveCardsTo(_discardedCards, _discardPile, new Card[] { card },
             CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
     }
 
     public bool TryMoveCardToDrop(List<Card> cardsSource, Card card, SuitColor? color)
     {
-        if (IsCardMatchLastDrop(card))
+        if (IsCardMatchLastInDiscardPile(card))
         {
-            MoveCardToDrop(cardsSource, card, color);
+            RemAndMoveCardToDiscardPile(cardsSource, card, color);
             //print("match");
             return true;
         }
@@ -148,7 +140,7 @@ public class CardManager : AbstractCardManager
     {
         if (_availableCards.Count < amount)
         {
-            var cards = Utils.RemoveAndGetFirstNElements(_dropCards, _dropCards.Count - 1);
+            var cards = Utils.RemoveAndGetFirstNElements(_discardedCards, _discardedCards.Count - 1);
             cards = ShuffleCards(cards);
             MoveCardsTo(_availableCards, gameObject, cards, CardState.closed);
             return true;
@@ -156,10 +148,10 @@ public class CardManager : AbstractCardManager
         return false;
     }
 
-    public bool IsCardMatchLastDrop(Card card)
+    public bool IsCardMatchLastInDiscardPile(Card card)
     {
-        if (_dropCards.Count == 0) throw new Exception("The drop is empty!");
-        var lastCardInDrop = _dropCards.Last();
+        if (_discardedCards.Count == 0) throw new Exception("The drop is empty!");
+        var lastCardInDrop = _discardedCards.Last();
         if (card.Type == CardType.suit)
         {
             return card.Color == CurrentColor || card.Value == lastCardInDrop.Value;
@@ -171,8 +163,8 @@ public class CardManager : AbstractCardManager
         return false;
     }
 
-    public Card GetFirstCardInDrop()
+    public Card GetFirstCardInDiscardPile()
     {
-        return _dropCards.First();
+        return _discardedCards.First();
     }
 }
