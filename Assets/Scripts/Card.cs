@@ -79,7 +79,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         );
     }
 
-    public byte[] MapToBytes()
+    public byte[] ToBytes()
     {
         return new byte[] {
             (byte)Type,

@@ -28,7 +28,7 @@ public class API : MonoBehaviour
         {
             (byte)Endpoints.tryMoveCardToDiscardPile
         };
-        bytes.AddRange(card.MapToBytes());
+        bytes.AddRange(card.ToBytes());
         websocket.Send(bytes.ToArray());
     }
 
