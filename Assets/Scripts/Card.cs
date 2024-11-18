@@ -61,4 +61,32 @@ public class Card : MonoBehaviour, IPointerClickHandler
             GetComponent<Image>().sprite = _sprite;
         }
     }
+
+    public static (CardType, SuitColor?, SuitValue?, OtherCards?, CardState) MapFromBytes(byte[] data)
+    {
+        var offset = 0;
+        var type = (CardType)data[offset++];
+        var color = (SuitColor)data[offset++];
+        var value = (SuitValue)data[offset++];
+        var other = (OtherCards)data[offset++];
+        var state = (CardState)data[offset++];
+        return (
+            type,
+            (byte)color == 255 ? null : color,
+            (byte)value == 255 ? null : value,
+            (byte)other == 255 ? null : other,
+            state
+        );
+    }
+
+    public byte[] MapToBytes()
+    {
+        return new byte[] {
+            (byte)Type,
+            Color == null ? (byte)255 : (byte)Color,
+            Value == null ? (byte)255 : (byte)Value,
+            Other == null ? (byte)255 : (byte)Other,
+            (byte)State
+        };
+    }
 }

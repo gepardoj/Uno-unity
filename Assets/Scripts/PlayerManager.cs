@@ -66,7 +66,7 @@ public class PlayerManager : MonoBehaviour, IPlayerActions
 
     public void PlayCard(Card card, SuitColor? color = null)
     {
-        var res = GameMaster.Instance.CardManager.TryMoveCardToDrop(CurrentPlayer.Cards, card, color);
+        var res = GameMaster.Instance.CardManager.TryMoveCardToDiscardPile(CurrentPlayer.Cards, card, color);
         if (!res) throw new Exception("The card is not match last drop");
         PlayCardRule(card);
         FinishTurn();

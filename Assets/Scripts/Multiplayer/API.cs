@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using NativeWebSocket;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,11 +12,25 @@ public enum Endpoints : byte
     startGame,
     getCardsInHand,
     moveCardToDiscardPile,
+    tryMoveCardToDiscardPile,
 }
 
 public class API : MonoBehaviour
 {
     [SerializeField, RequiredMember] private TextMeshProUGUI _playersNumber;
+
+    protected WebSocket websocket;
+
+
+    public void SendTryChooseCard(Card card)
+    {
+        var bytes = new List<byte>
+        {
+            (byte)Endpoints.tryMoveCardToDiscardPile
+        };
+        bytes.AddRange(card.MapToBytes());
+        websocket.Send(bytes.ToArray());
+    }
 
     protected void OnMessage(byte[] data)
     {
@@ -25,6 +41,7 @@ public class API : MonoBehaviour
         else if (endpoint == Endpoints.startGame) OnStartGame();
         else if (endpoint == Endpoints.getCardsInHand) StartCoroutine(OnGetCardsInHand(data));
         else if (endpoint == Endpoints.moveCardToDiscardPile) StartCoroutine(OnMoveCardToDiscardPile(data));
+        else if (endpoint == Endpoints.tryMoveCardToDiscardPile) StartCoroutine(IsCardMoved(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -35,7 +52,7 @@ public class API : MonoBehaviour
 
     void OnStartGame()
     {
-        if (Scene.IsMenu()) SceneManager.LoadScene(Scene.MULTIPLAYER);
+        if (Scene.IsMenu) SceneManager.LoadScene(Scene.MULTIPLAYER);
     }
 
     IEnumerator OnGetCardsInHand(byte[] data)
@@ -43,45 +60,25 @@ public class API : MonoBehaviour
         var length = data[1];
         var items = data[2..];
         while (!MultiplayerGame.Instance) yield return null;
-        // var iz = 0;
-        // foreach (var item in items)
-        // {
-        //     // print(item);
-        //     // if ((iz + 1) % 5 == 0) print("next card");
-        //     iz++;
-        // }
-        var offset = 0;
         for (var i = 0; i < length; i++)
         {
-            var type = (CardType)items[offset++];
-            var color = (SuitColor)items[offset++];
-            var value = (SuitValue)items[offset++];
-            var other = (OtherCards)items[offset++];
-            var state = (CardState)items[offset++];
-            // if (type == CardType.suit) print($"suit card: {color}, {value}, {state}");
-            // else if (type == CardType.other) print($"other card: {other}, {state}");
-            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(type,
-            (byte)color == 255 ? null : color,
-            (byte)value == 255 ? null : value,
-            (byte)other == 255 ? null : other,
-            state);
+            var (type, color, value, other, state) = Card.MapFromBytes(items[(i * 5)..]);
+            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(type, color, value, other, state);
         }
     }
 
     IEnumerator OnMoveCardToDiscardPile(byte[] data)
     {
         while (!MultiplayerGame.Instance) yield return null;
-        var offset = 1;
-        var type = (CardType)data[offset++];
-        var color = (SuitColor)data[offset++];
-        var value = (SuitValue)data[offset++];
-        var other = (OtherCards)data[offset++];
-        var state = (CardState)data[offset++];
-        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(type,
-            (byte)color == 255 ? null : color,
-            (byte)value == 255 ? null : value,
-            (byte)other == 255 ? null : other,
-            state
-        );
+        var (type, color, value, other, state) = Card.MapFromBytes(data[1..]);
+        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(type, color, value, other, state);
+    }
+
+    IEnumerator IsCardMoved(byte[] data)
+    {
+        while (!MultiplayerGame.Instance) yield return null;
+        var res = data[1];
+        // print($"res {res}");
+        MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(res == 1);
     }
 }

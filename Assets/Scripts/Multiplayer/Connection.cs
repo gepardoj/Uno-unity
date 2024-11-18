@@ -5,8 +5,6 @@ public class Connection : API
     private static Connection _instance;
     public static Connection Instance => _instance;
 
-    WebSocket websocket;
-
     void Start()
     {
         if (_instance == null)

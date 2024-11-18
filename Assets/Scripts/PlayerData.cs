@@ -35,7 +35,7 @@ public class PlayerData : MonoBehaviour
 
     void Start()
     {
-        if (Scene.IsSinglePlayer())
+        if (Scene.IsSingleplayer)
         {
             GameMaster.Instance.CardManager.TakeNewCards(this, Const.START_CARDS_N,
             _playerType == PlayerType.Player ? CardState.opened : CardState.closed);

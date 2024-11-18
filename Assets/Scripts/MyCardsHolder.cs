@@ -12,7 +12,11 @@ public class MyCardsHolder : MonoBehaviour
 
     public void OnSelectCard(Card card)
     {
-        if (CanClick)
+        if (Scene.IsMultiplayer)
+        {
+            MultiplayerGame.Instance.OnSelectCard(card);
+        }
+        else if (CanClick)
         {
             GameMaster.Instance.PlayerManager.OnChooseCard(card);
         }

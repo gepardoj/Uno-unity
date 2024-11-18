@@ -27,4 +27,10 @@ public class MultiplayerGame : MonoBehaviour
         _cardManager = GetComponentInChildren<ClientCardManager>();
         _playerManager = GetComponentInChildren<ClientPlayerManager>();
     }
+
+    public void OnSelectCard(Card card)
+    {
+        CardManager.LastTouchedCard = card;
+        Connection.Instance.SendTryChooseCard(card);
+    }
 }

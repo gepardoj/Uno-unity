@@ -46,7 +46,7 @@ public class CardManager : AbstractCardManager
     public void DEBUG_EmptyDeck()
     {
         MoveCardsTo(_discardedCards, _discardPile, _availableCards.GetRange(0, _availableCards.Count),
-        CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
+        CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 360)));
         _availableCards.RemoveRange(0, _availableCards.Count);
     }
 
@@ -113,10 +113,10 @@ public class CardManager : AbstractCardManager
         Utils.RemoveAndGetElement(cardsSource, card);
         CurrentColor = card.Type == CardType.other && color != null ? color : card.Color;
         MoveCardsTo(_discardedCards, _discardPile, new Card[] { card },
-            CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 361)));
+            CardState.opened, new Vector3(0, 0, UnityEngine.Random.Range(0, 360)));
     }
 
-    public bool TryMoveCardToDrop(List<Card> cardsSource, Card card, SuitColor? color)
+    public bool TryMoveCardToDiscardPile(List<Card> cardsSource, Card card, SuitColor? color)
     {
         if (IsCardMatchLastInDiscardPile(card))
         {
@@ -150,11 +150,11 @@ public class CardManager : AbstractCardManager
 
     public bool IsCardMatchLastInDiscardPile(Card card)
     {
-        if (_discardedCards.Count == 0) throw new Exception("The drop is empty!");
-        var lastCardInDrop = _discardedCards.Last();
+        if (_discardedCards.Count == 0) throw new Exception("The discard pile is empty!");
+        var lastCard = _discardedCards.Last();
         if (card.Type == CardType.suit)
         {
-            return card.Color == CurrentColor || card.Value == lastCardInDrop.Value;
+            return card.Color == CurrentColor || card.Value == lastCard.Value;
         }
         else if (card.Type == CardType.other)
         {
