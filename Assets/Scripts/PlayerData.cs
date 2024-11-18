@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using TMPro;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-public enum PlayerType { Player, AI_Player }
+public enum PlayerType { Player, AI_Player, RemotePlayer }
 
 public class PlayerData : MonoBehaviour
 {
@@ -11,8 +12,21 @@ public class PlayerData : MonoBehaviour
     [SerializeField, RequiredMember] private GameObject _cardsHolder;
     [SerializeField, RequiredMember] private AvatarPlayer _avatar;
     [SerializeField, RequiredMember] private FadeText _statusText;
+    [SerializeField, RequiredMember] private TextMeshProUGUI _name;
 
     [SerializeField, RequiredMember] private PlayerType _playerType;
+
+    private string _id;
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            _id = value;
+            _name.text = value[^4..];
+            gameObject.SetActive(true);
+        }
+    }
 
     private IPlayerLogic _player; // can be real player or AI player
     private bool? _saidUno = null;
@@ -42,6 +56,11 @@ public class PlayerData : MonoBehaviour
         }
         if (_playerType == PlayerType.Player) _player = new PlayerController(this);
         else if (_playerType == PlayerType.AI_Player) _player = new AIPlayer(this);
+        else if (_playerType == PlayerType.RemotePlayer)
+        {
+            gameObject.SetActive(false);
+            _player = null;
+        }
     }
 
     public void DrawCards(int amount)

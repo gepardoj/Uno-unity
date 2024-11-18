@@ -4,10 +4,9 @@ public class ClientCardManager : AbstractCardManager
 {
     public Card? LastTouchedCard { get; set; }
 
-    public void CreateCardAndAddToPlayer(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)
+    public void CreateCardAndAddToPlayer(PlayerData player, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)
     {
-        var player = MultiplayerGame.Instance.PlayerManager.Player;
-        CreateCardAndAddTo(player.Cards, player.CardsHolder, type, color, value, other, CardState.opened);
+        CreateCardAndAddTo(player.Cards, player.CardsHolder, type, color, value, other, state);
     }
 
     public void CreateCardAndAddToDiscardPile(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)

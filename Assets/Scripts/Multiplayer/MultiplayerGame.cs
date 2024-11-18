@@ -1,3 +1,5 @@
+using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class MultiplayerGame : MonoBehaviour
@@ -9,6 +11,8 @@ public class MultiplayerGame : MonoBehaviour
     public static MultiplayerGame Instance => _instance;
     public ClientCardManager CardManager => _cardManager;
     public ClientPlayerManager PlayerManager => _playerManager;
+
+    public TextMeshProUGUI debugText;
 
     void Start()
     {
@@ -32,5 +36,12 @@ public class MultiplayerGame : MonoBehaviour
     {
         CardManager.LastTouchedCard = card;
         Connection.Instance.SendTryChooseCard(card);
+    }
+
+    public void AddPlayer(string id, int cardsNumber)
+    {
+        var player = PlayerManager.AddPlayer(id);
+        foreach (var _ in Enumerable.Range(1, cardsNumber))
+            CardManager.CreateCardAndAddToPlayer(player, CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed); // doesnt really matter what cards, it's just a facade
     }
 }
