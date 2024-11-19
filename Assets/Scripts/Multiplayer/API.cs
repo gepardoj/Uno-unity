@@ -76,6 +76,7 @@ public class API : MonoBehaviour
         if (Scene.IsMenu) SceneManager.LoadScene(Scene.MULTIPLAYER);
         while (!MultiplayerGame.Instance) yield return null;
         var id = Encoding.ASCII.GetString(data[1..]);
+        print(id);
         MultiplayerGame.Instance.PlayerManager.Player.Id = id;
     }
 
@@ -84,26 +85,36 @@ public class API : MonoBehaviour
         var length = data[1];
         var items = data[2..];
         while (!MultiplayerGame.Instance) yield return null;
+        var player = MultiplayerGame.Instance.PlayerManager.Player;
+        var state = MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player) ? CardState.opened : CardState.closed;
         for (var i = 0; i < length; i++)
         {
-            var (type, color, value, other, state) = Card.MapFromBytes(items[(i * 5)..]);
-            var player = MultiplayerGame.Instance.PlayerManager.Player;
-            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, type, color, value, other, CardState.opened);
+            var cardData = Card.MapFromBytes(items[(i * 5)..]);
+            cardData.State = state;
+            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, cardData);
         }
     }
 
     IEnumerator OnMoveCardToDiscardPile(byte[] data)
     {
         while (!MultiplayerGame.Instance) yield return null;
-        var (type, color, value, other, state) = Card.MapFromBytes(data[1..]);
-        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(type, color, value, other, state);
+        var cardData = Card.MapFromBytes(data[1..]);
+        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(cardData);
     }
 
     IEnumerator IsCardMoved(byte[] data)
     {
         while (!MultiplayerGame.Instance) yield return null;
         var res = data[1];
-        // print($"res {res}");
-        MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(res == 1);
+        if (res == 0) yield break;
+        print("continue");
+        var rest = data[2..];
+        var str = Encoding.ASCII.GetString(rest);
+        var chunks = str.Split(":");
+        var id = chunks[0];
+        var card = Card.MapFromBytes(Encoding.ASCII.GetBytes(chunks[1]));
+        var player = MultiplayerGame.Instance.PlayerManager.Player.Id == id ?
+            MultiplayerGame.Instance.PlayerManager.Player : MultiplayerGame.Instance.PlayerManager.OtherPlayers.Find(_ => _.Id == id);
+        MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(player, card);
     }
 }

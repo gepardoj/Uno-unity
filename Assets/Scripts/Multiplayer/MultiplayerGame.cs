@@ -41,7 +41,8 @@ public class MultiplayerGame : MonoBehaviour
     public void AddPlayer(string id, int cardsNumber)
     {
         var player = PlayerManager.AddPlayer(id);
+        var cardData = new CardData(CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
         foreach (var _ in Enumerable.Range(1, cardsNumber))
-            CardManager.CreateCardAndAddToPlayer(player, CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed); // doesnt really matter what cards, it's just a facade
+            CardManager.CreateCardAndAddToPlayer(player, cardData); // doesnt really matter what cards, it's just a facade
     }
 }

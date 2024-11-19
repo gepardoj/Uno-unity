@@ -8,6 +8,31 @@ public enum SuitColor { red, green, blue, yellow }
 public enum SuitValue { _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, cancel, _draw, reverse }
 public enum OtherCards { wild, wilddraw }
 
+public struct CardData
+{
+    private CardType _type;
+    private SuitColor? _color;
+    private SuitValue? _value;
+    private OtherCards? _other;
+    private CardState _state;
+
+    public CardType Type => _type;
+    public SuitColor? Color => _color;
+    public SuitValue? Value => _value;
+    public OtherCards? Other => _other;
+    public CardState State { get => _state; set => _state = value; }
+
+    public CardData(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)
+    {
+        _type = type;
+        _color = color;
+        _value = value;
+        _other = other;
+        _state = state;
+    }
+
+}
+
 public class Card : MonoBehaviour, IPointerClickHandler
 {
     private CardType _type;
@@ -62,7 +87,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public static (CardType, SuitColor?, SuitValue?, OtherCards?, CardState) MapFromBytes(byte[] data)
+    public static CardData MapFromBytes(byte[] data)
     {
         var offset = 0;
         var type = (CardType)data[offset++];
@@ -70,7 +95,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         var value = (SuitValue)data[offset++];
         var other = (OtherCards)data[offset++];
         var state = (CardState)data[offset++];
-        return (
+        return new CardData(
             type,
             (byte)color == 255 ? null : color,
             (byte)value == 255 ? null : value,

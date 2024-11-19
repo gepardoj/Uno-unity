@@ -4,24 +4,29 @@ public class ClientCardManager : AbstractCardManager
 {
     public Card? LastTouchedCard { get; set; }
 
-    public void CreateCardAndAddToPlayer(PlayerData player, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)
+    public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData)
     {
-        CreateCardAndAddTo(player.Cards, player.CardsHolder, type, color, value, other, state);
+        CreateCardAndAddTo(player.Cards, player.CardsHolder, cardData.Type, cardData.Color, cardData.Value, cardData.Other, cardData.State);
     }
 
-    public void CreateCardAndAddToDiscardPile(CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state)
+    public void CreateCardAndAddToDiscardPile(CardData cardValues)
     {
-        CreateCardAndAddTo(null, _discardPile, type, color, value, other, CardState.opened, new Vector3(0, 0, Random.Range(0, 360)));
+        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(0, 0, Random.Range(0, 360)));
     }
 
-    public void MoveCardFromPlayerToDiscardPile(bool res)
+    public void MoveCardFromPlayerToDiscardPile(PlayerData player, CardData cardData)
     {
-        if (res)
+        if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player))
         {
-            var player = MultiplayerGame.Instance.PlayerManager.Player;
             Utils.RemoveAndGetElement(player.Cards, LastTouchedCard);
             MoveCardsTo(null, _discardPile, new Card[] { LastTouchedCard }, CardState.opened, new Vector3(0, 0, Random.Range(0, 360)));
+            LastTouchedCard = null;
         }
-        LastTouchedCard = null;
+        else
+        {
+            var removedCard = Utils.RemoveAndGetFirstNElements(player.Cards, 1);  // doesnt matter which card to remove as they all the same (in client unity game)
+            Destroy(removedCard[0].gameObject);
+            CreateCardAndAddToDiscardPile(cardData);
+        }
     }
 }
