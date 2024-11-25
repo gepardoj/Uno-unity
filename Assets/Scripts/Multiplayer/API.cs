@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NativeWebSocket;
 using TMPro;
@@ -10,29 +12,81 @@ using UnityEngine.Scripting;
 public enum Endpoints : byte
 {
     playersInLobby,
-    otherPlayersInGame,
     startGame,
-    getCardsInHand,
-    moveCardToDiscardPile,
-    tryMoveCardToDiscardPile,
+    playCardToDiscardPile,
+    drawCardsFromDeck,
+    otherDrawsCards, // Other player draws a card without info about what is a card exactly, for secure reasons, client does need to know
 }
 
 public class API : MonoBehaviour
 {
+    // just need to be aware when to use, do not mess with data
+    public static readonly byte BYTE_NULL = 255;
+    public static readonly byte BYTE_SEPARATOR = 254;
+
     [SerializeField, RequiredMember] private TextMeshProUGUI _playersNumber;
+
+    private bool _isGameStarted = false;
 
     protected WebSocket websocket;
 
+    //\\ Parsing/Maping Data Structues //\\
 
-    public void SendTryChooseCard(Card card)
+    // players ids, local players comes first
+    static string[] ParsePlayersInfo(byte[] data) {
+        return data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
+    }
+
+#nullable enable
+    static string? ParsePlayerId(byte[] data) {
+        var chunks = Encoding.ASCII.GetString(data).Split(":");
+        var id = chunks[0];
+        if (!id.StartsWith("player")) return null;
+        return id;
+    }
+#nullable disable
+
+    static CardData[] ParseCards(byte[] data) {
+        var chunks = data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
+        // print(BitConverter.ToString(data));
+        var cards = new List<CardData>();
+        foreach (var card in chunks) {
+            cards.Add(Card.MapFromBytes(Encoding.ASCII.GetBytes(card)));
+        }
+        return cards.ToArray();
+    }
+
+    static (string,char,int)[] ParseOtherDrawsCards(byte[] data) {
+        var chunks = data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
+        var tuples = new List<(string,char,int)>();
+        foreach (var chunk in chunks) {
+            var splited = chunk.Split(":");
+            var id = splited[0];
+            var sign = splited[1][0]; // + or -
+            var cardsNumber = int.Parse(splited[1][1..]);
+            // print($"{id} {sign} {cardsNumber}");
+            tuples.Add((id, sign, cardsNumber));
+        }
+        return tuples.ToArray();
+    }
+
+    //\\ Sending Data //\\
+
+    public void SendPlayCard(Card card)
     {
         var bytes = new List<byte>
         {
-            (byte)Endpoints.tryMoveCardToDiscardPile
+            (byte)Endpoints.playCardToDiscardPile
         };
         bytes.AddRange(card.ToBytes());
         websocket.Send(bytes.ToArray());
     }
+
+    public void SendDrawCardsFromDeck(int amount) {
+
+    }
+
+    // Receiving messages //\\
 
     protected void OnMessage(byte[] data)
     {
@@ -40,11 +94,10 @@ public class API : MonoBehaviour
         var endpoint = (Endpoints)data[0];
         print($"endpoint = {endpoint}");
         if (endpoint == Endpoints.playersInLobby) OnPlayersInLobby(data);
-        else if (endpoint == Endpoints.otherPlayersInGame) StartCoroutine(OnOtherPlayersInGame(data));
         else if (endpoint == Endpoints.startGame) StartCoroutine(OnStartGame(data));
-        else if (endpoint == Endpoints.getCardsInHand) StartCoroutine(OnGetCardsInHand(data));
-        else if (endpoint == Endpoints.moveCardToDiscardPile) StartCoroutine(OnMoveCardToDiscardPile(data));
-        else if (endpoint == Endpoints.tryMoveCardToDiscardPile) StartCoroutine(IsCardMoved(data));
+        else if (endpoint == Endpoints.playCardToDiscardPile) StartCoroutine(OnPlayedCard(data));
+        else if (endpoint == Endpoints.drawCardsFromDeck) StartCoroutine(OnDrawedCards(data));
+        else if (endpoint == Endpoints.otherDrawsCards) StartCoroutine(OtherDrawsCards(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -53,68 +106,70 @@ public class API : MonoBehaviour
         // _playersNumber.text = $"Players: {playersInLobby}";
     }
 
-    IEnumerator OnOtherPlayersInGame(byte[] data)
-    {
-        while (!MultiplayerGame.Instance) yield return null;
-        // foreach (var el in data) print(el);
-        var str = Encoding.ASCII.GetString(data[1..]);
-        MultiplayerGame.Instance.debugText.text = str;
-        // print(str);
-        var playersData = str.Split("\n");
-        foreach (var playerData in playersData)
-        {
-            var splited = playerData.Split(":");
-            var id = splited[0];
-            var cardsNumber = int.Parse(splited[1]);
-            MultiplayerGame.Instance.AddPlayer(id, cardsNumber);
-
-        }
-    }
-
     IEnumerator OnStartGame(byte[] data)
     {
         if (Scene.IsMenu) SceneManager.LoadScene(Scene.MULTIPLAYER);
         while (!MultiplayerGame.Instance) yield return null;
-        var id = Encoding.ASCII.GetString(data[1..]);
-        print(id);
-        MultiplayerGame.Instance.PlayerManager.Player.Id = id;
+        var ids = ParsePlayersInfo(data[1..]);
+        // print(ids[0]);
+        // print(ids[1]);
+        if (ids.Length < 2) throw new Exception("The're should be at least two players");
+        MultiplayerGame.Instance.PlayerManager.Player.Id = ids[0];
+        foreach (var id in ids[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(id);
+        _isGameStarted = true;
     }
 
-    IEnumerator OnGetCardsInHand(byte[] data)
-    {
-        var length = data[1];
-        var items = data[2..];
-        while (!MultiplayerGame.Instance) yield return null;
-        var player = MultiplayerGame.Instance.PlayerManager.Player;
-        var state = MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player) ? CardState.opened : CardState.closed;
-        for (var i = 0; i < length; i++)
-        {
-            var cardData = Card.MapFromBytes(items[(i * 5)..]);
-            cardData.State = state;
-            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, cardData);
+    CardData GetCardByOffset(byte[] data, int offset) {
+        var cards = ParseCards(data[offset..]);
+        return cards[0];
+    }
+
+    // only for local player
+    IEnumerator OnPlayedCard(byte[] data) {
+        while (!_isGameStarted) yield return null;
+        var res = data[1];
+        if (res == 0) yield break;
+        print("the card has been played successfully on the server");
+        // print(BitConverter.ToString(data));
+        var id = ParsePlayerId(data[2..]);
+        if (id != null) {
+            var card = GetCardByOffset(data, 2+id.Length+1);
+            var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
+            MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(player, card);
+        } else {
+            var card = GetCardByOffset(data, 2);
+            MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(card);
         }
     }
 
-    IEnumerator OnMoveCardToDiscardPile(byte[] data)
-    {
-        while (!MultiplayerGame.Instance) yield return null;
-        var cardData = Card.MapFromBytes(data[1..]);
-        MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(cardData);
-    }
-
-    IEnumerator IsCardMoved(byte[] data)
-    {
-        while (!MultiplayerGame.Instance) yield return null;
+    // only for local player
+    IEnumerator OnDrawedCards(byte[] data) {
+        while (!_isGameStarted) yield return null;
         var res = data[1];
         if (res == 0) yield break;
-        print("continue");
-        var rest = data[2..];
-        var str = Encoding.ASCII.GetString(rest);
-        var chunks = str.Split(":");
-        var id = chunks[0];
-        var card = Card.MapFromBytes(Encoding.ASCII.GetBytes(chunks[1]));
-        var player = MultiplayerGame.Instance.PlayerManager.Player.Id == id ?
-            MultiplayerGame.Instance.PlayerManager.Player : MultiplayerGame.Instance.PlayerManager.OtherPlayers.Find(_ => _.Id == id);
-        MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(player, card);
+        print($"drawing new cards...");
+        // print($"{BitConverter.ToString(data[2..])}");
+        var cards = ParseCards(data[2..]);
+        var player = MultiplayerGame.Instance.PlayerManager.Player;
+        foreach (var card in cards)
+        {
+            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, card);
+        }
+    }
+
+    // getting info about other players
+    IEnumerator OtherDrawsCards(byte[] data) {
+        while (!_isGameStarted) yield return null;
+        foreach (var (id, sign, cardsNumber) in ParseOtherDrawsCards(data[1..])) {
+            var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
+            // print($"player is {player.Id}");
+            if (sign == '+') {
+                foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.CreateFakeCard(player);
+            } 
+            // else if (sign == '-') {
+            //     foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.RemoveFakeCard(player);
+            // }
+            else throw new Exception("Unknow sign operator");
+        }
     }
 }

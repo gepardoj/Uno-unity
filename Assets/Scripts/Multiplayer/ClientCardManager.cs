@@ -29,4 +29,14 @@ public class ClientCardManager : AbstractCardManager
             CreateCardAndAddToDiscardPile(cardData);
         }
     }
-}
+
+    // for other players
+    public void CreateFakeCard(PlayerData player) {
+        CreateCardAndAddTo(player.Cards, player.CardsHolder, CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
+    }
+
+    public void RemoveFakeCard(PlayerData player) {
+        Destroy(player.Cards[0].gameObject);
+        player.Cards.RemoveAt(0);
+    }
+ }

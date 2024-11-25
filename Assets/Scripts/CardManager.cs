@@ -128,7 +128,7 @@ public class CardManager : AbstractCardManager
         return false;
     }
 
-    public void TakeNewCards(PlayerData player, int cardsAmount, CardState cardState)
+    public void DrawCards(PlayerData player, int cardsAmount, CardState cardState)
     {
         if (IsDeckEmptyThenShuffle(cardsAmount))
             player.StatusText.AddPlay(Const.SHUFFLED_TEXT);

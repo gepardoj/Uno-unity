@@ -97,9 +97,9 @@ public class Card : MonoBehaviour, IPointerClickHandler
         var state = (CardState)data[offset++];
         return new CardData(
             type,
-            (byte)color == 255 ? null : color,
-            (byte)value == 255 ? null : value,
-            (byte)other == 255 ? null : other,
+            (byte)color == API.BYTE_NULL ? null : color,
+            (byte)value == API.BYTE_NULL ? null : value,
+            (byte)other == API.BYTE_NULL ? null : other,
             state
         );
     }
@@ -108,9 +108,9 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         return new byte[] {
             (byte)Type,
-            Color == null ? (byte)255 : (byte)Color,
-            Value == null ? (byte)255 : (byte)Value,
-            Other == null ? (byte)255 : (byte)Other,
+            Color == null ? API.BYTE_NULL : (byte)Color,
+            Value == null ? API.BYTE_NULL : (byte)Value,
+            Other == null ? API.BYTE_NULL : (byte)Other,
             (byte)State
         };
     }

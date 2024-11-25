@@ -26,7 +26,6 @@ public class AbstractCardManager : MonoBehaviour
 
     protected void Start()
     {
-        // print("Abstract card manager");
         if (_suitCardsDef == null || _suitCardsDef.Length != SUIT_CARDS_DEF_N)
             throw new Exception($"Suit cards definition should be {SUIT_CARDS_DEF_N}");
         if (_otherCardsDef == null || _otherCardsDef.Length != OTHER_CARDS_DEF_N)
@@ -63,6 +62,6 @@ public class AbstractCardManager : MonoBehaviour
             return _suitCardsDef.First(card => card.Color == color && card.Value == value).Sprite;
         if (type == CardType.other)
             return _otherCardsDef.First(card => card.Value == other).Sprite;
-        throw new Exception("Cannot be");
+        throw new Exception("Unknown card type!");
     }
 }

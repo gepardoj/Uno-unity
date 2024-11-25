@@ -51,7 +51,7 @@ public class PlayerData : MonoBehaviour
     {
         if (Scene.IsSingleplayer)
         {
-            GameMaster.Instance.CardManager.TakeNewCards(this, Const.START_CARDS_N,
+            GameMaster.Instance.CardManager.DrawCards(this, Const.START_CARDS_N,
             _playerType == PlayerType.Player ? CardState.opened : CardState.closed);
         }
         if (_playerType == PlayerType.Player) _player = new PlayerController(this);
@@ -65,7 +65,7 @@ public class PlayerData : MonoBehaviour
 
     public void DrawCards(int amount)
     {
-        GameMaster.Instance.CardManager.TakeNewCards(this, amount,
+        GameMaster.Instance.CardManager.DrawCards(this, amount,
             PlayerType == PlayerType.Player ? CardState.opened : CardState.closed);
         StatusText.AddPlay(Const.DRAW_TEXT(amount));
     }

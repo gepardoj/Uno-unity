@@ -35,14 +35,14 @@ public class MultiplayerGame : MonoBehaviour
     public void OnSelectCard(Card card)
     {
         CardManager.LastTouchedCard = card;
-        Connection.Instance.SendTryChooseCard(card);
+        Connection.Instance.SendPlayCard(card);
     }
 
-    public void AddPlayer(string id, int cardsNumber)
-    {
-        var player = PlayerManager.AddPlayer(id);
-        var cardData = new CardData(CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
-        foreach (var _ in Enumerable.Range(1, cardsNumber))
-            CardManager.CreateCardAndAddToPlayer(player, cardData); // doesnt really matter what cards, it's just a facade
-    }
+    // public void AddPlayer(string id, int cardsNumber)
+    // {
+    //     var player = PlayerManager.AddPlayer(id);
+    //     var cardData = new CardData(CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
+    //     foreach (var _ in Enumerable.Range(1, cardsNumber))
+    //         CardManager.CreateCardAndAddToPlayer(player, cardData); // doesnt really matter what cards, it's just a facade
+    // }
 }
