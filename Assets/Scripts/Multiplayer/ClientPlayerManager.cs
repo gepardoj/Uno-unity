@@ -23,7 +23,8 @@ public class ClientPlayerManager : MonoBehaviour
         return _player.Id == player.Id;
     }
 
-    public PlayerData GetPlayerById(string id) {
+    public PlayerData GetPlayerById(string id)
+    {
         return Player.Id == id ? Player : OtherPlayers.Find(_ => _.Id == id);
     }
 }

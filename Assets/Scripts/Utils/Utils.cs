@@ -30,12 +30,15 @@ public static class Utils
         return items.GroupBy(property).Select(x => x.First());
     }
 
-    public static byte[][] Split(this byte[] array, byte separator) {
+    public static byte[][] Split(this byte[] array, byte separator)
+    {
         var list = new List<byte[]>();
         var start = 0;
-        for (var i = 0; i < array.Length; i++) {
+        for (var i = 0; i < array.Length; i++)
+        {
             var value = array[i];
-            if (value == separator) {
+            if (value == separator)
+            {
                 list.Add(array.Skip(start).TakeWhile(_ => _ != separator).ToArray());
                 start = i + 1;
             }

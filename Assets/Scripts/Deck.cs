@@ -13,6 +13,11 @@ public class Deck : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (Scene.IsMultiplayer)
+        {
+            Connection.Instance.SendDrawCardsFromDeck();
+            return;
+        }
         if (CanClick)
         {
             GameMaster.Instance.PlayerManager.DrawCards(Const.DRAW_CARDS_N);

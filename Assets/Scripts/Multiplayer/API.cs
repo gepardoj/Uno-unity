@@ -33,33 +33,39 @@ public class API : MonoBehaviour
     //\\ Parsing/Maping Data Structues //\\
 
     // players ids, local players comes first
-    static string[] ParsePlayersInfo(byte[] data) {
+    static string[] ParsePlayersInfo(byte[] data)
+    {
         return data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
     }
 
 #nullable enable
-    static string? ParsePlayerId(byte[] data) {
+    static string? ParsePlayerId(byte[] data)
+#nullable disable
+    {
         var chunks = Encoding.ASCII.GetString(data).Split(":");
         var id = chunks[0];
         if (!id.StartsWith("player")) return null;
         return id;
     }
-#nullable disable
 
-    static CardData[] ParseCards(byte[] data) {
+    static CardData[] ParseCards(byte[] data)
+    {
         var chunks = data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
         // print(BitConverter.ToString(data));
         var cards = new List<CardData>();
-        foreach (var card in chunks) {
+        foreach (var card in chunks)
+        {
             cards.Add(Card.MapFromBytes(Encoding.ASCII.GetBytes(card)));
         }
         return cards.ToArray();
     }
 
-    static (string,char,int)[] ParseOtherDrawsCards(byte[] data) {
+    static (string, char, int)[] ParseOtherDrawsCards(byte[] data)
+    {
         var chunks = data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
-        var tuples = new List<(string,char,int)>();
-        foreach (var chunk in chunks) {
+        var tuples = new List<(string, char, int)>();
+        foreach (var chunk in chunks)
+        {
             var splited = chunk.Split(":");
             var id = splited[0];
             var sign = splited[1][0]; // + or -
@@ -72,18 +78,26 @@ public class API : MonoBehaviour
 
     //\\ Sending Data //\\
 
-    public void SendPlayCard(Card card)
+#nullable enable
+    protected void Send(Endpoints endpoint, byte[]? data = null)
+#nullable disable
     {
         var bytes = new List<byte>
         {
-            (byte)Endpoints.playCardToDiscardPile
+            (byte)endpoint
         };
-        bytes.AddRange(card.ToBytes());
+        if (data != null) bytes.AddRange(data);
         websocket.Send(bytes.ToArray());
     }
 
-    public void SendDrawCardsFromDeck(int amount) {
+    public void SendPlayCard(Card card)
+    {
+        Send(Endpoints.playCardToDiscardPile, card.ToBytes());
+    }
 
+    public void SendDrawCardsFromDeck()
+    {
+        Send(Endpoints.drawCardsFromDeck);
     }
 
     // Receiving messages //\\
@@ -119,31 +133,37 @@ public class API : MonoBehaviour
         _isGameStarted = true;
     }
 
-    CardData GetCardByOffset(byte[] data, int offset) {
+    CardData GetCardByOffset(byte[] data, int offset)
+    {
         var cards = ParseCards(data[offset..]);
         return cards[0];
     }
 
     // only for local player
-    IEnumerator OnPlayedCard(byte[] data) {
+    IEnumerator OnPlayedCard(byte[] data)
+    {
         while (!_isGameStarted) yield return null;
         var res = data[1];
         if (res == 0) yield break;
         print("the card has been played successfully on the server");
         // print(BitConverter.ToString(data));
         var id = ParsePlayerId(data[2..]);
-        if (id != null) {
-            var card = GetCardByOffset(data, 2+id.Length+1);
+        if (id != null)
+        {
+            var card = GetCardByOffset(data, 2 + id.Length + 1);
             var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
             MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(player, card);
-        } else {
+        }
+        else
+        {
             var card = GetCardByOffset(data, 2);
             MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(card);
         }
     }
 
     // only for local player
-    IEnumerator OnDrawedCards(byte[] data) {
+    IEnumerator OnDrawedCards(byte[] data)
+    {
         while (!_isGameStarted) yield return null;
         var res = data[1];
         if (res == 0) yield break;
@@ -158,14 +178,17 @@ public class API : MonoBehaviour
     }
 
     // getting info about other players
-    IEnumerator OtherDrawsCards(byte[] data) {
+    IEnumerator OtherDrawsCards(byte[] data)
+    {
         while (!_isGameStarted) yield return null;
-        foreach (var (id, sign, cardsNumber) in ParseOtherDrawsCards(data[1..])) {
+        foreach (var (id, sign, cardsNumber) in ParseOtherDrawsCards(data[1..]))
+        {
             var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
             // print($"player is {player.Id}");
-            if (sign == '+') {
+            if (sign == '+')
+            {
                 foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.CreateFakeCard(player);
-            } 
+            }
             // else if (sign == '-') {
             //     foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.RemoveFakeCard(player);
             // }
