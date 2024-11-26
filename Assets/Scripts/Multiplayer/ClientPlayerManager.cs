@@ -23,8 +23,20 @@ public class ClientPlayerManager : MonoBehaviour
         return _player.Id == player.Id;
     }
 
+    public bool IsLocalPlayer(string id)
+    {
+        return _player.Id == id;
+    }
+
     public PlayerData GetPlayerById(string id)
     {
         return Player.Id == id ? Player : OtherPlayers.Find(_ => _.Id == id);
+    }
+
+    public void OnPlayerWin(string id)
+    {
+        var player = GetPlayerById(id);
+        player.StatusText.AddPlay(Const.WIN_TEXT);
+        player.Avatar.Play();
     }
 }

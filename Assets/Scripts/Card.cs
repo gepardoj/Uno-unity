@@ -31,6 +31,11 @@ public struct CardData
         _state = state;
     }
 
+    public override string ToString()
+    {
+        return $"{Type} {Color} {Value} {Other}";
+    }
+
 }
 
 public class Card : MonoBehaviour, IPointerClickHandler
@@ -91,15 +96,15 @@ public class Card : MonoBehaviour, IPointerClickHandler
     {
         var offset = 0;
         var type = (CardType)data[offset++];
-        var color = (SuitColor)data[offset++];
-        var value = (SuitValue)data[offset++];
-        var other = (OtherCards)data[offset++];
+        var color = data[offset++];
+        var value = data[offset++];
+        var other = data[offset++];
         var state = (CardState)data[offset++];
         return new CardData(
             type,
-            (byte)color == API.BYTE_NULL ? null : color,
-            (byte)value == API.BYTE_NULL ? null : value,
-            (byte)other == API.BYTE_NULL ? null : other,
+            color == API.BYTE_NULL ? null : (SuitColor)color,
+            value == API.BYTE_NULL ? null : (SuitValue)value,
+            other == API.BYTE_NULL ? null : (OtherCards)other,
             state
         );
     }

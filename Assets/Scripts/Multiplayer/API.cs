@@ -16,7 +16,11 @@ public enum Endpoints : byte
     playCardToDiscardPile,
     drawCardsFromDeck,
     otherDrawsCards, // Other player draws a card without info about what is a card exactly, for secure reasons, client does need to know
+    winnerOrLooser,
 }
+
+enum PlayerFinalCondition { WIN, DEFEAT };
+
 
 public class API : MonoBehaviour
 {
@@ -50,12 +54,12 @@ public class API : MonoBehaviour
 
     static CardData[] ParseCards(byte[] data)
     {
-        var chunks = data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
+        var chunks = data.Split(BYTE_SEPARATOR);
         // print(BitConverter.ToString(data));
         var cards = new List<CardData>();
         foreach (var card in chunks)
         {
-            cards.Add(Card.MapFromBytes(Encoding.ASCII.GetBytes(card)));
+            cards.Add(Card.MapFromBytes(card));
         }
         return cards.ToArray();
     }
@@ -112,6 +116,7 @@ public class API : MonoBehaviour
         else if (endpoint == Endpoints.playCardToDiscardPile) StartCoroutine(OnPlayedCard(data));
         else if (endpoint == Endpoints.drawCardsFromDeck) StartCoroutine(OnDrawedCards(data));
         else if (endpoint == Endpoints.otherDrawsCards) StartCoroutine(OtherDrawsCards(data));
+        else if (endpoint == Endpoints.winnerOrLooser) StartCoroutine(OnWinnerOrLooser(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -193,6 +198,24 @@ public class API : MonoBehaviour
             //     foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.RemoveFakeCard(player);
             // }
             else throw new Exception("Unknow sign operator");
+        }
+    }
+
+    IEnumerator OnWinnerOrLooser(byte[] data)
+    {
+        while (!_isGameStarted) yield return null;
+        var cond = (PlayerFinalCondition)data[1];
+        var id = ParsePlayerId(data[2..]);
+        var menuState = cond == PlayerFinalCondition.WIN ? MenuState.won : MenuState.lost;
+        if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(id))
+        {
+            Menu.state = menuState;
+            SceneManager.LoadScene(Scene.MENU);
+        }
+        else
+        {
+            if (cond == PlayerFinalCondition.DEFEAT) throw new Exception("You shouldn't see other player's defeating");
+            MultiplayerGame.Instance.PlayerManager.OnPlayerWin(id);
         }
     }
 }
