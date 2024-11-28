@@ -9,7 +9,7 @@ public class RotateAround : MonoBehaviour
     [SerializeField, RequiredMember] private Vector3 _cardStartingPosition;
     [SerializeField, RequiredMember] private Vector3 _rotatonVector = new(0, 1, 0);
 
-    public void PlaceCards()
+    public void PlaceObjectsAround()
     {
         var children = new List<RectTransform>(GetComponentsInChildren<RectTransform>());
         children.Remove(GetComponent<RectTransform>());

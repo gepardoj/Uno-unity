@@ -24,6 +24,19 @@ public class AbstractCardManager : MonoBehaviour
     [SerializeField, RequiredMember] protected TextMeshProUGUI _currentColorText;
     [SerializeField, ReadOnly] protected SuitColor? _currentColor;
 
+    public Deck Deck => _deck;
+    public GameObject ColorPicker => _colorPicker;
+    public SuitColor? CurrentColor
+    {
+        get => _currentColor;
+        set
+        {
+            _currentColor = value;
+            var text = value != null ? Enum.GetName(typeof(SuitColor), value) : "Unknown";
+            _currentColorText.text = $"Current Color: {text}";
+        }
+    }
+
     protected void Start()
     {
         if (_suitCardsDef == null || _suitCardsDef.Length != SUIT_CARDS_DEF_N)
@@ -53,7 +66,7 @@ public class AbstractCardManager : MonoBehaviour
             card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(rotation));
         }
         var rotateAround = cardsHolder.GetComponent<RotateAround>();
-        if (rotateAround) rotateAround.PlaceCards();
+        if (rotateAround) rotateAround.PlaceObjectsAround();
     }
 
     protected Sprite GetSpriteInCardsDef(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)

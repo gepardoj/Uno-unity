@@ -13,22 +13,9 @@ public class CardManager : AbstractCardManager
     [SerializeField, ReadOnly] private List<Card> _availableCards = new();
     [SerializeField, ReadOnly] private List<Card> _discardedCards = new();
 
-    public Deck Deck => _deck;
-    public GameObject ColorPicker => _colorPicker;
-    public SuitColor? CurrentColor
-    {
-        get => _currentColor;
-        set
-        {
-            _currentColor = value;
-            var text = value != null ? Enum.GetName(typeof(SuitColor), value) : "Unknown";
-            _currentColorText.text = $"Current Color: {text}";
-        }
-    }
-
     public void ManualInit()
     {
-        _colorPicker.GetComponent<RotateAround>().PlaceCards();
+        _colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
 
         GenerateCards();
         _availableCards = ShuffleCards(_availableCards);

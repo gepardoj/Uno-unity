@@ -12,3 +12,6 @@
 - Play animation for moving cards 
 
 - Refactor (do more elegant, logic code)
+
+WebGL version:
+- After finishing the game cannot re-open connection, an error occurred:

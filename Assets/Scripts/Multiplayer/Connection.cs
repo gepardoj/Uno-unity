@@ -26,7 +26,7 @@ public class Connection : API
         if (websocket == null)
         {
             print("init websocket");
-            websocket = new WebSocket("ws://192.168.1.13:3000");
+            websocket = new WebSocket("ws://192.168.1.248:3000");
             websocket.OnOpen += () =>
             {
                 print($"connection open");

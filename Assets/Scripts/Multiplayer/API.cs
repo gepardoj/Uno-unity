@@ -14,6 +14,7 @@ public enum Endpoints : byte
     playersInLobby,
     startGame,
     playCardToDiscardPile,
+    chooseColor,
     drawCardsFromDeck,
     otherDrawsCards, // Other player draws a card without info about what is a card exactly, for secure reasons, client does need to know
     winnerOrLooser,
@@ -37,9 +38,13 @@ public class API : MonoBehaviour
     //\\ Parsing/Maping Data Structues //\\
 
     // players ids, local players comes first
-    static string[] ParsePlayersInfo(byte[] data)
+    static (byte Number, string Id)[] ParsePlayersInfo(byte[] data)
     {
-        return data.Split(BYTE_SEPARATOR).Select(_ => Encoding.ASCII.GetString(_)).ToArray();
+        return data.Split(BYTE_SEPARATOR).Select(_ =>
+        (
+            _[0], // player order number
+            Encoding.ASCII.GetString(_[1..])) // player id
+        ).ToArray();
     }
 
 #nullable enable
@@ -104,6 +109,12 @@ public class API : MonoBehaviour
         Send(Endpoints.drawCardsFromDeck);
     }
 
+    public void SendChosenColor(SuitColor color)
+    {
+        MultiplayerGame.Instance.CardManager.ColorPicker.SetActive(false);
+        Send(Endpoints.chooseColor, new byte[] { (byte)color });
+    }
+
     // Receiving messages //\\
 
     protected void OnMessage(byte[] data)
@@ -117,6 +128,7 @@ public class API : MonoBehaviour
         else if (endpoint == Endpoints.drawCardsFromDeck) StartCoroutine(OnDrawedCards(data));
         else if (endpoint == Endpoints.otherDrawsCards) StartCoroutine(OtherDrawsCards(data));
         else if (endpoint == Endpoints.winnerOrLooser) StartCoroutine(OnWinnerOrLooser(data));
+        else if (endpoint == Endpoints.chooseColor) StartCoroutine(OnChooseColor(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -129,12 +141,13 @@ public class API : MonoBehaviour
     {
         if (Scene.IsMenu) SceneManager.LoadScene(Scene.MULTIPLAYER);
         while (!MultiplayerGame.Instance) yield return null;
-        var ids = ParsePlayersInfo(data[1..]);
+        var players = ParsePlayersInfo(data[1..]);
         // print(ids[0]);
         // print(ids[1]);
-        if (ids.Length < 2) throw new Exception("The're should be at least two players");
-        MultiplayerGame.Instance.PlayerManager.Player.Id = ids[0];
-        foreach (var id in ids[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(id);
+        if (players.Length < 2) throw new Exception("The're should be at least two players");
+        MultiplayerGame.Instance.PlayerManager.Player.Id = players[0].Id;
+        MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
+        foreach (var player in players[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(player.Id, player.Number);
         _isGameStarted = true;
     }
 
@@ -217,5 +230,13 @@ public class API : MonoBehaviour
             if (cond == PlayerFinalCondition.DEFEAT) throw new Exception("You shouldn't see other player's defeating");
             MultiplayerGame.Instance.PlayerManager.OnPlayerWin(id);
         }
+    }
+
+    IEnumerator OnChooseColor(byte[] data)
+    {
+        while (!_isGameStarted) yield return null;
+        var colorPicker = MultiplayerGame.Instance.CardManager.ColorPicker;
+        colorPicker.SetActive(true);
+        colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
     }
 }

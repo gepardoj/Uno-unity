@@ -944,6 +944,11 @@ MonoBehaviour:
   - {fileID: 1727170888}
   - {fileID: 1936179139}
   - {fileID: 209400417}
+  _playerAvatars:
+  - {fileID: 21300000, guid: 111ea4b2a702e274b80d0f1a75efd540, type: 3}
+  - {fileID: 21300000, guid: bec8a780b9fc110438b2254ec8cd9a8d, type: 3}
+  - {fileID: 21300000, guid: ae95dbc465028034c915982c6b96c42b, type: 3}
+  - {fileID: 21300000, guid: a198744a8083f884584c231ab4fe68a6, type: 3}
 --- !u!1001 &1042726153515888818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1034,6 +1039,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 856818057842962901, guid: d0c316d3f187bf64cb0a6e5066ade823, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 959018932297737484, guid: d0c316d3f187bf64cb0a6e5066ade823, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 959018932297737484, guid: d0c316d3f187bf64cb0a6e5066ade823, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 959018932297737484, guid: d0c316d3f187bf64cb0a6e5066ade823, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1888371409490104822, guid: d0c316d3f187bf64cb0a6e5066ade823, type: 3}

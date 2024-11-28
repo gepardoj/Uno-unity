@@ -7,13 +7,17 @@ public class ClientPlayerManager : MonoBehaviour
     [SerializeField, RequiredMember] private PlayerData _player;
     [SerializeField, RequiredMember] private List<PlayerData> _otherPlayers;
 
+    [SerializeField, RequiredMember] private Sprite[] _playerAvatars;
+
     public PlayerData Player => _player;
     public List<PlayerData> OtherPlayers => _otherPlayers;
+    public Sprite[] PlayerAvatars => _playerAvatars;
 
-    public PlayerData AddPlayer(string id)
+    public PlayerData AddPlayer(string id, byte number)
     {
         var freePlayer = _otherPlayers.Find(_ => _.Id == null);
         freePlayer.Id = id;
+        freePlayer.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[number]);
         // print($"free player, {freePlayer.name} {freePlayer.gameObject.activeSelf}");
         return freePlayer;
     }

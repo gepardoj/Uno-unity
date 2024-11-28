@@ -29,6 +29,10 @@ public class AvatarPlayer : FadeInOut
     public void Highlight(bool state)
     {
         _image.color = state ? Color.yellow : Color.white;
+    }
 
+    public void SetSprite(Sprite sprite)
+    {
+        _image.sprite = sprite;
     }
 }
