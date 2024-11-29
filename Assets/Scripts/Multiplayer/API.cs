@@ -14,6 +14,7 @@ public enum Endpoints : byte
     playersInLobby,
     startGame,
     playCardToDiscardPile,
+    currentColor,
     chooseColor,
     drawCardsFromDeck,
     otherDrawsCards, // Other player draws a card without info about what is a card exactly, for secure reasons, client does need to know
@@ -129,6 +130,7 @@ public class API : MonoBehaviour
         else if (endpoint == Endpoints.otherDrawsCards) StartCoroutine(OtherDrawsCards(data));
         else if (endpoint == Endpoints.winnerOrLooser) StartCoroutine(OnWinnerOrLooser(data));
         else if (endpoint == Endpoints.chooseColor) StartCoroutine(OnChooseColor(data));
+        else if (endpoint == Endpoints.currentColor) StartCoroutine(OnCurrentColor(data));
     }
 
     void OnPlayersInLobby(byte[] data)
@@ -238,5 +240,12 @@ public class API : MonoBehaviour
         var colorPicker = MultiplayerGame.Instance.CardManager.ColorPicker;
         colorPicker.SetActive(true);
         colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
+    }
+
+    IEnumerator OnCurrentColor(byte[] data)
+    {
+        while (!_isGameStarted) yield return null;
+        var color = (SuitColor)data[1];
+        MultiplayerGame.Instance.CardManager.CurrentColor = color;
     }
 }
