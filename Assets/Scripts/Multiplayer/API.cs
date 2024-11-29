@@ -224,6 +224,7 @@ public class API : MonoBehaviour
         {
             Menu.state = menuState;
             Destroy(Connection.Instance.gameObject);
+            Connection.Instance = null;
             SceneManager.LoadScene(Scene.MENU);
         }
         else

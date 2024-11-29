@@ -2,19 +2,21 @@ using NativeWebSocket;
 
 public class Connection : API
 {
-    private static Connection _instance;
-    public static Connection Instance => _instance;
+    public static Connection Instance
+    {
+        get; set;
+    }
 
     void Start()
     {
-        if (_instance == null)
+        if (Instance == null)
         {
             print("Connection:: instance is initialized");
-            _instance = this;
+            Instance = this;
             Init();
             DontDestroyOnLoad(gameObject);
         }
-        else if (_instance != this)
+        else if (Instance != this)
         {
             print("Connection:: instance is already initialized, deleting another one...");
             Destroy(gameObject);
@@ -53,7 +55,7 @@ public class Connection : API
             websocket.Connect();
     }
 
-    public void Close()
+    public void AttemptClose()
     {
         websocket?.Close();
     }
@@ -67,6 +69,6 @@ public class Connection : API
 
     void OnApplicationQuit()
     {
-        Close();
+        AttemptClose();
     }
 }

@@ -81,7 +81,7 @@ public class Menu : MonoBehaviour
 
     void BackFromLobby()
     {
-        Connection.Instance.Close();
+        Connection.Instance.AttemptClose();
         state = MenuState.main;
         OnMainMenu();
     }
