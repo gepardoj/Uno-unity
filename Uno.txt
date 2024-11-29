@@ -14,7 +14,6 @@
 - Refactor (do more elegant, logic code)
 
 Network:
-- After finishing the game, new game is loaded with errors
 
 WebGL version:
 - After finishing the game cannot re-open connection, an error occurred:

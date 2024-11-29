@@ -144,8 +144,6 @@ public class API : MonoBehaviour
         if (Scene.IsMenu) SceneManager.LoadScene(Scene.MULTIPLAYER);
         while (!MultiplayerGame.Instance) yield return null;
         var players = ParsePlayersInfo(data[1..]);
-        // print(ids[0]);
-        // print(ids[1]);
         if (players.Length < 2) throw new Exception("The're should be at least two players");
         MultiplayerGame.Instance.PlayerManager.Player.Id = players[0].Id;
         MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
@@ -225,6 +223,7 @@ public class API : MonoBehaviour
         if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(id))
         {
             Menu.state = menuState;
+            Destroy(Connection.Instance.gameObject);
             SceneManager.LoadScene(Scene.MENU);
         }
         else
