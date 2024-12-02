@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Scripting;
 
@@ -30,6 +31,11 @@ public class ClientPlayerManager : MonoBehaviour
     public bool IsLocalPlayer(string id)
     {
         return _player.Id == id;
+    }
+
+    public PlayerData[] GetAllPlayers()
+    {
+        return OtherPlayers.Concat(new[] { Player }).ToArray();
     }
 
     public PlayerData GetPlayerById(string id)

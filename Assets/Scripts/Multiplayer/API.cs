@@ -13,6 +13,7 @@ public enum Endpoints : byte
 {
     playersInLobby,
     startGame,
+    getTurn,
     playCardToDiscardPile,
     currentColor,
     chooseColor,
@@ -136,6 +137,7 @@ public class API : MonoBehaviour
         print($"endpoint = {endpoint}");
         if (endpoint == Endpoints.playersInLobby) OnPlayersInLobby(data);
         else if (endpoint == Endpoints.startGame) StartCoroutine(OnStartGame(data));
+        else if (endpoint == Endpoints.getTurn) StartCoroutine(OnGetTurn(data));
         else if (endpoint == Endpoints.playCardToDiscardPile) StartCoroutine(OnPlayedCard(data));
         else if (endpoint == Endpoints.drawCardsFromDeck) StartCoroutine(OnDrawedCards(data));
         else if (endpoint == Endpoints.otherDrawsCards) StartCoroutine(OtherDrawsCards(data));
@@ -160,6 +162,14 @@ public class API : MonoBehaviour
         MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
         foreach (var player in players[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(player.Id, player.Number);
         _isGameStarted = true;
+    }
+
+    IEnumerator OnGetTurn(byte[] data)
+    {
+        while (!_isGameStarted) yield return null;
+        var id = ParsePlayerId(data[1..]);
+        foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
+        MultiplayerGame.Instance.PlayerManager.GetPlayerById(id).Avatar.Highlight(true);
     }
 
     CardData GetCardByOffset(byte[] data, int offset)
