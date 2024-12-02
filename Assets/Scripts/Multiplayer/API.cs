@@ -38,6 +38,14 @@ public class API : MonoBehaviour
 
     //\\ Parsing/Maping Data Structues //\\
 
+    // public static byte ParseEnumToByte<T>(T value) where T : Enum {
+    //     return value == null ? BYTE_NULL : (byte)Convert.ChangeType(value, typeof(T));
+    // }
+
+    // public static T? ParseByteToEnum<T>(byte value) where T : Enum {
+    //     return value == BYTE_NULL ? null : (T)Convert.ChangeType(value, typeof(byte));
+    // }
+
     // players ids, local players comes first
     static (byte Number, string Id)[] ParsePlayersInfo(byte[] data)
     {
@@ -100,9 +108,12 @@ public class API : MonoBehaviour
         websocket.Send(bytes.ToArray());
     }
 
-    public void SendPlayCard(Card card)
+    public void SendPlayCard(Card card, SuitColor? color)
     {
-        Send(Endpoints.playCardToDiscardPile, card.ToBytes());
+        var colorByte = color == null ? BYTE_NULL : (byte)color;
+        var list = new List<byte> { colorByte };
+        list.AddRange(card.ToBytes());
+        Send(Endpoints.playCardToDiscardPile, list.ToArray());
     }
 
     public void SendDrawCardsFromDeck()
@@ -157,10 +168,18 @@ public class API : MonoBehaviour
         return cards[0];
     }
 
+    void Cleanup()
+    {
+        MultiplayerGame.Instance.TimeSlider.Stop();
+        var lastCard = MultiplayerGame.Instance.CardManager.LastTouchedCard;
+        if (lastCard) lastCard.Glow.Stop();
+    }
+
     // only for local player
     IEnumerator OnPlayedCard(byte[] data)
     {
         while (!_isGameStarted) yield return null;
+        Cleanup();
         var res = data[1];
         if (res == 0) yield break;
         print("the card has been played successfully on the server");
@@ -183,16 +202,16 @@ public class API : MonoBehaviour
     IEnumerator OnDrawedCards(byte[] data)
     {
         while (!_isGameStarted) yield return null;
-        var res = data[1];
-        if (res == 0) yield break;
+        var timeToPlayS = data[1];
         print($"drawing new cards...");
         // print($"{BitConverter.ToString(data[2..])}");
         var cards = ParseCards(data[2..]);
         var player = MultiplayerGame.Instance.PlayerManager.Player;
         foreach (var card in cards)
         {
-            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, card);
+            MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, card, timeToPlayS);
         }
+        if (timeToPlayS > 0) MultiplayerGame.Instance.TimeSlider.Play(timeToPlayS);
     }
 
     // getting info about other players

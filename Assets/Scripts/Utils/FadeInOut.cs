@@ -24,25 +24,27 @@ public abstract class FadeInOut : MonoBehaviour
     protected abstract void OnPlaying();
 
 
-    public void AddPlay()
+    public void AddPlay(float? durationIn = null)
     {
-        StartCoroutine(WaitAddPlay());
+        StartCoroutine(WaitAddPlay(durationIn));
     }
 
-    private IEnumerator WaitAddPlay()
+    private IEnumerator WaitAddPlay(float? durationIn = null)
     {
         var delay = _delayToAdd;
         _delayToAdd += DELAY_TO_ADD;
         yield return new WaitForSeconds(delay);
         var clone = Instantiate(this, transform.parent);
         clone._clone = true;
-        clone.Play();
+        clone.Play(durationIn);
     }
 
-    public void Play()
+    public void Play(float? durationIn = null)
     {
+        if (durationIn != null) _duration = (float)durationIn;
         _deltaTime = 0f;
         _playing = true;
+        gameObject.SetActive(true);
         StartCoroutine(Fade());
     }
 
@@ -64,8 +66,15 @@ public abstract class FadeInOut : MonoBehaviour
         FadeOutText();
         yield return new WaitForSeconds(_duration / 2);
         _playing = false;
+        gameObject.SetActive(false);
         OnFinish();
         if (IsClone) Destroy(gameObject);
+    }
+
+    public void Stop()
+    {
+        _playing = false;
+        gameObject.SetActive(false);
     }
 
     void Update()

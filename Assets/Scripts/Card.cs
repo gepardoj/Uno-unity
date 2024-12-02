@@ -46,6 +46,8 @@ public class Card : MonoBehaviour, IPointerClickHandler
     private OtherCards? _other;
     private CardState _state;
     private Sprite _sprite;
+    [SerializeField] private FadeImage _glow;
+
 
     public CardType Type => _type;
     public SuitColor? Color => _color;
@@ -53,6 +55,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public OtherCards? Other => _other;
     public CardState State => _state;
     public Sprite Sprite => _sprite;
+    public FadeImage Glow => _glow;
 
     public bool IsColoredAction
         => Value == SuitValue.cancel || Value == SuitValue._draw || Value == SuitValue.reverse;

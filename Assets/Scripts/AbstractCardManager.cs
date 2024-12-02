@@ -20,12 +20,12 @@ public class AbstractCardManager : MonoBehaviour
     [SerializeField, RequiredMember] protected Sprite _closedSprite;
     [SerializeField, RequiredMember] protected GameObject _discardPile;
     [SerializeField, RequiredMember] protected Deck _deck;
-    [SerializeField, RequiredMember] protected GameObject _colorPicker;
+    [SerializeField, RequiredMember] protected ColorPicker _colorPicker;
     [SerializeField, RequiredMember] protected TextMeshProUGUI _currentColorText;
     [SerializeField, ReadOnly] protected SuitColor? _currentColor;
 
     public Deck Deck => _deck;
-    public GameObject ColorPicker => _colorPicker;
+    public ColorPicker ColorPicker => _colorPicker;
     public SuitColor? CurrentColor
     {
         get => _currentColor;
@@ -45,17 +45,17 @@ public class AbstractCardManager : MonoBehaviour
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
     }
 
-    protected void CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation)
+    protected IEnumerable<Card> CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation)
     {
         var card = Instantiate(_cardPrefab);
         card.Init(type, color, value, other, state, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
-        MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation);
+        return MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation);
     }
 
     /// <summary>
     /// Does not remove cards from source
     /// </summary>
-    protected void MoveCardsTo([Optional] List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState state,
+    protected IEnumerable<Card> MoveCardsTo([Optional] List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState state,
       [Optional] Vector3 rotation)
     {
         foreach (var card in newCards)
@@ -67,6 +67,7 @@ public class AbstractCardManager : MonoBehaviour
         }
         var rotateAround = cardsHolder.GetComponent<RotateAround>();
         if (rotateAround) rotateAround.PlaceObjectsAround();
+        return newCards;
     }
 
     protected Sprite GetSpriteInCardsDef(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)

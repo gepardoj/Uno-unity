@@ -1,4 +1,3 @@
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -7,10 +6,12 @@ public class MultiplayerGame : MonoBehaviour
     private static MultiplayerGame _instance;
     private ClientCardManager _cardManager;
     private ClientPlayerManager _playerManager;
+    [SerializeField] private SimpleSlider _timeSlider;
 
     public static MultiplayerGame Instance => _instance;
     public ClientCardManager CardManager => _cardManager;
     public ClientPlayerManager PlayerManager => _playerManager;
+    public SimpleSlider TimeSlider => _timeSlider;
 
     public TextMeshProUGUI debugText;
 
@@ -35,14 +36,22 @@ public class MultiplayerGame : MonoBehaviour
     public void OnSelectCard(Card card)
     {
         CardManager.LastTouchedCard = card;
-        Connection.Instance.SendPlayCard(card);
+        if (card.IsWild || card.IsWildDraw)
+        {
+            var colorPicker = CardManager.ColorPicker;
+            colorPicker.SetActive(true);
+            colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
+            void action(SuitColor color)
+            {
+                Connection.Instance.SendPlayCard(card, color);
+                colorPicker.SetActive(false);
+                ColorPicker.OnChosenColor -= action;
+            }
+            ColorPicker.OnChosenColor += action;
+        }
+        else
+        {
+            Connection.Instance.SendPlayCard(card, null);
+        }
     }
-
-    // public void AddPlayer(string id, int cardsNumber)
-    // {
-    //     var player = PlayerManager.AddPlayer(id);
-    //     var cardData = new CardData(CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
-    //     foreach (var _ in Enumerable.Range(1, cardsNumber))
-    //         CardManager.CreateCardAndAddToPlayer(player, cardData); // doesnt really matter what cards, it's just a facade
-    // }
 }

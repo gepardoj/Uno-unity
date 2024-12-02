@@ -8,7 +8,7 @@ public class ColoredItem : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (Scene.IsMultiplayer) Connection.Instance.SendChosenColor(_color);
+        if (Scene.IsMultiplayer) ColorPicker.SetColor(_color);
         else if (Scene.IsSingleplayer) GameMaster.Instance.PlayerManager.OnChooseColor(_color);
     }
 }

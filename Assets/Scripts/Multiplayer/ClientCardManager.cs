@@ -2,11 +2,14 @@ using UnityEngine;
 
 public class ClientCardManager : AbstractCardManager
 {
+#nullable enable
     public Card? LastTouchedCard { get; set; }
+#nullable disable
 
-    public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData)
+    public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData, byte timeToPlayS)
     {
-        CreateCardAndAddTo(player.Cards, player.CardsHolder, cardData.Type, cardData.Color, cardData.Value, cardData.Other, cardData.State);
+        var cards = CreateCardAndAddTo(player.Cards, player.CardsHolder, cardData.Type, cardData.Color, cardData.Value, cardData.Other, cardData.State);
+        if (timeToPlayS > 0) foreach (var _ in cards) _.Glow.Play(timeToPlayS);
     }
 
     public void CreateCardAndAddToDiscardPile(CardData cardValues)
