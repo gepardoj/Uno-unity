@@ -169,7 +169,9 @@ public class API : MonoBehaviour
         while (!_isGameStarted) yield return null;
         var id = ParsePlayerId(data[1..]);
         foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
-        MultiplayerGame.Instance.PlayerManager.GetPlayerById(id).Avatar.Highlight(true);
+        var currentPlayer = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
+        currentPlayer.Avatar.Highlight(true);
+        MultiplayerGame.Instance.PlayerManager.CurrentPlayer = currentPlayer;
     }
 
     CardData GetCardByOffset(byte[] data, int offset)

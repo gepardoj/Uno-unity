@@ -35,6 +35,7 @@ public class MultiplayerGame : MonoBehaviour
 
     public void OnSelectCard(Card card)
     {
+        if (!PlayerManager.IsLocalPlayersTurn()) return;
         CardManager.LastTouchedCard = card;
         if (card.IsWild || card.IsWildDraw)
         {

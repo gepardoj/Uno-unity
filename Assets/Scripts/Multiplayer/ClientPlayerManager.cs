@@ -7,11 +7,11 @@ public class ClientPlayerManager : MonoBehaviour
 {
     [SerializeField, RequiredMember] private PlayerData _player;
     [SerializeField, RequiredMember] private List<PlayerData> _otherPlayers;
-
     [SerializeField, RequiredMember] private Sprite[] _playerAvatars;
 
     public PlayerData Player => _player;
     public List<PlayerData> OtherPlayers => _otherPlayers;
+    public PlayerData CurrentPlayer { get; set; }
     public Sprite[] PlayerAvatars => _playerAvatars;
 
     public PlayerData AddPlayer(string id, byte number)
@@ -31,6 +31,11 @@ public class ClientPlayerManager : MonoBehaviour
     public bool IsLocalPlayer(string id)
     {
         return _player.Id == id;
+    }
+
+    public bool IsLocalPlayersTurn()
+    {
+        return _player.Id == CurrentPlayer.Id;
     }
 
     public PlayerData[] GetAllPlayers()
