@@ -19,6 +19,7 @@ public enum Endpoints : byte
     chooseColor,
     drawCardsFromDeck,
     otherDrawsCards, // Other player draws a card without info about what is a card exactly, for secure reasons, client does need to know
+    uno,
     winnerOrLooser,
 }
 
@@ -126,6 +127,11 @@ public class API : MonoBehaviour
     {
         MultiplayerGame.Instance.CardManager.ColorPicker.SetActive(false);
         Send(Endpoints.chooseColor, new byte[] { (byte)color });
+    }
+
+    public void SendUno()
+    {
+        Send(Endpoints.uno);
     }
 
     // Receiving messages //\\

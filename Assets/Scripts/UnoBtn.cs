@@ -5,6 +5,7 @@ public class UnoBtn : MonoBehaviour, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
-        GameMaster.Instance.PlayerManager.Uno();
+        if (Scene.IsMultiplayer) Connection.Instance.SendUno();
+        else if (Scene.IsSingleplayer) GameMaster.Instance.PlayerManager.Uno();
     }
 }
