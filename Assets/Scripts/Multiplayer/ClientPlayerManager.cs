@@ -18,7 +18,7 @@ public class ClientPlayerManager : MonoBehaviour
     {
         var freePlayer = _otherPlayers.Find(_ => _.Id == null);
         freePlayer.Id = id;
-        freePlayer.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[number]);
+        //freePlayer.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[number]);
         // print($"free player, {freePlayer.name} {freePlayer.gameObject.activeSelf}");
         return freePlayer;
     }

@@ -165,7 +165,7 @@ public class API : MonoBehaviour
         var players = ParsePlayersInfo(data[1..]);
         if (players.Length < 2) throw new Exception("The're should be at least two players");
         MultiplayerGame.Instance.PlayerManager.Player.Id = players[0].Id;
-        MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
+        //MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
         foreach (var player in players[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(player.Id, player.Number);
         _isGameStarted = true;
     }
@@ -174,9 +174,9 @@ public class API : MonoBehaviour
     {
         while (!_isGameStarted) yield return null;
         var id = ParsePlayerId(data[1..]);
-        foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
+        // foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
         var currentPlayer = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
-        currentPlayer.Avatar.Highlight(true);
+        // currentPlayer.Avatar.Highlight(true);
         MultiplayerGame.Instance.PlayerManager.CurrentPlayer = currentPlayer;
     }
 

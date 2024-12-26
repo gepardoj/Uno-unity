@@ -2,6 +2,9 @@ using NativeWebSocket;
 
 public class Connection : API
 {
+    static string ADDRESS = "127.0.0.1";
+    static string PORT = "3000";
+
     public static Connection Instance
     {
         get; set;
@@ -28,7 +31,7 @@ public class Connection : API
         if (websocket == null)
         {
             print("init websocket");
-            websocket = new WebSocket("ws://192.168.1.248:3000");
+            websocket = new WebSocket($"ws://{ADDRESS}:{PORT}");
             websocket.OnOpen += () =>
             {
                 print($"connection open");
