@@ -178,6 +178,7 @@ public class API : MonoBehaviour
         var currentPlayer = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
         // currentPlayer.Avatar.Highlight(true);
         MultiplayerGame.Instance.PlayerManager.CurrentPlayer = currentPlayer;
+        MultiplayerGame.Instance.CardManager.Deck.Highlight(MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(currentPlayer));
     }
 
     CardData GetCardByOffset(byte[] data, int offset)

@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class Deck : MonoBehaviour, IPointerClickHandler
+public class Deck : MonoBehaviour
 {
     private bool _canClick = false;
+    [SerializeField] private ParticleSystem _particleSystem;
 
     public bool CanClick
     {
@@ -11,7 +11,17 @@ public class Deck : MonoBehaviour, IPointerClickHandler
         set => _canClick = value;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    void Start()
+    {
+        Highlight(false);
+    }
+
+    public void Highlight(bool value)
+    {
+        _particleSystem.gameObject.SetActive(value);
+    }
+
+    void OnMouseDown()
     {
         if (Scene.IsMultiplayer)
         {
