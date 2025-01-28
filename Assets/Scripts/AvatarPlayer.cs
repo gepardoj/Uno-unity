@@ -6,33 +6,31 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class AvatarPlayer : FadeInOut
 {
-    private Image _image;
-    [SerializeField, RequiredMember] private TextMeshProUGUI _playerName;
+    [SerializeField] GameObject _sphere;
 
-    void Start()
-    {
-        _image = GetComponent<Image>();
-    }
+    [SerializeField, RequiredMember] private TextMeshProUGUI _playerName;
 
     protected override void OnFinish()
     {
-        _image.color = new Color(1, 1, 1, 0);
-        _playerName.alpha = 0;
+        // _image.color = new Color(1, 1, 1, 0);
+        // _playerName.alpha = 0;
     }
 
     protected override void OnPlaying()
     {
-        _image.color = new Color(1, 1, 1, FuncDeltaTime);
-        _playerName.alpha = FuncDeltaTime;
+        // _image.color = new Color(1, 1, 1, FuncDeltaTime);
+        // _playerName.alpha = FuncDeltaTime;
     }
 
     public void Highlight(bool state)
     {
-        _image.color = state ? Color.yellow : Color.white;
+        // _image.color = state ? Color.yellow : Color.white;
+        if (_sphere == null) return;
+        _sphere.SetActive(state);
     }
 
     public void SetSprite(Sprite sprite)
     {
-        _image.sprite = sprite;
+        // _image.sprite = sprite;
     }
 }

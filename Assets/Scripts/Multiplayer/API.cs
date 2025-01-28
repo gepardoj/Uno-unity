@@ -174,9 +174,9 @@ public class API : MonoBehaviour
     {
         while (!_isGameStarted) yield return null;
         var id = ParsePlayerId(data[1..]);
-        // foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
+        foreach (var _ in MultiplayerGame.Instance.PlayerManager.GetAllPlayers()) _.Avatar.Highlight(false);
         var currentPlayer = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
-        // currentPlayer.Avatar.Highlight(true);
+        currentPlayer.Avatar.Highlight(true);
         MultiplayerGame.Instance.PlayerManager.CurrentPlayer = currentPlayer;
         MultiplayerGame.Instance.CardManager.Deck.Highlight(MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(currentPlayer));
     }
