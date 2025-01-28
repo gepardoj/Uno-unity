@@ -45,9 +45,10 @@ public class AbstractCardManager : MonoBehaviour
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
     }
 
-    protected IEnumerable<Card> CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation)
+    protected IEnumerable<Card> CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation, int cardOrderInLayer = 0)
     {
         var card = Instantiate(_cardPrefab);
+        card.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer;
         card.Init(type, color, value, other, state, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
         return MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation);
     }

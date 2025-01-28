@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public enum CardState { closed, opened }
 public enum CardType { suit, other }
@@ -38,7 +36,7 @@ public struct CardData
 
 }
 
-public class Card : MonoBehaviour, IPointerClickHandler
+public class Card : MonoBehaviour
 {
     private CardType _type;
     private SuitColor? _color;
@@ -46,7 +44,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     private OtherCards? _other;
     private CardState _state;
     private Sprite _sprite;
-    [SerializeField] private FadeImage _glow;
+    [SerializeField] private FadeRenderer _glow;
 
 
     public CardType Type => _type;
@@ -55,7 +53,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
     public OtherCards? Other => _other;
     public CardState State => _state;
     public Sprite Sprite => _sprite;
-    public FadeImage Glow => _glow;
+    public FadeRenderer Glow => _glow;
 
     public bool IsColoredAction
         => Value == SuitValue.cancel || Value == SuitValue._draw || Value == SuitValue.reverse;
@@ -76,7 +74,7 @@ public class Card : MonoBehaviour, IPointerClickHandler
         SetStateAndSprite(_state, closedSprite);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    void OnMouseDown()
     {
         var myCardsHolder = transform.parent.GetComponent<MyCardsHolder>();
         if (myCardsHolder) myCardsHolder.OnSelectCard(this);
@@ -87,11 +85,11 @@ public class Card : MonoBehaviour, IPointerClickHandler
         _state = state;
         if (_state == CardState.closed)
         {
-            GetComponent<Image>().sprite = closedSprite;
+            GetComponent<SpriteRenderer>().sprite = closedSprite;
         }
         else if (_state == CardState.opened)
         {
-            GetComponent<Image>().sprite = _sprite;
+            GetComponent<SpriteRenderer>().sprite = _sprite;
         }
     }
 

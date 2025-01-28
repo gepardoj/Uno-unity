@@ -215,6 +215,7 @@ public class API : MonoBehaviour
             var card = GetCardByOffset(data, 2);
             MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(card);
         }
+        MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
     }
 
     // only for local player
@@ -230,6 +231,7 @@ public class API : MonoBehaviour
         {
             MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, card, timeToPlayS);
         }
+        MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
         if (timeToPlayS > 0) MultiplayerGame.Instance.TimeSlider.Play(timeToPlayS);
     }
 
@@ -240,14 +242,11 @@ public class API : MonoBehaviour
         foreach (var (id, sign, cardsNumber) in ParseOtherDrawsCards(data[1..]))
         {
             var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
-            // print($"player is {player.Id}");
             if (sign == '+')
             {
+                print("Creating fake card");
                 foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.CreateFakeCard(player);
             }
-            // else if (sign == '-') {
-            //     foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.RemoveFakeCard(player);
-            // }
             else throw new Exception("Unknow sign operator");
         }
     }

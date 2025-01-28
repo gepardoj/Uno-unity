@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ClientCardManager : AbstractCardManager
 {
+    private int cardOrderInLayer = 0;
 #nullable enable
     public Card? LastTouchedCard { get; set; }
 #nullable disable
@@ -14,7 +15,10 @@ public class ClientCardManager : AbstractCardManager
 
     public void CreateCardAndAddToDiscardPile(CardData cardValues)
     {
-        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(0, 0, Random.Range(0, 360)));
+        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened,
+            rotation: new Vector3(0, 0, Random.Range(0, 360)),
+            cardOrderInLayer);
+        cardOrderInLayer++;
     }
 
     public void MoveCardFromPlayerToDiscardPile(PlayerData player, CardData cardData)
@@ -22,8 +26,11 @@ public class ClientCardManager : AbstractCardManager
         if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player))
         {
             Utils.RemoveAndGetElement(player.Cards, LastTouchedCard);
-            MoveCardsTo(null, _discardPile, new Card[] { LastTouchedCard }, CardState.opened, new Vector3(0, 0, Random.Range(0, 360)));
+            LastTouchedCard.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer;
+            MoveCardsTo(null, _discardPile, new Card[] { LastTouchedCard }, CardState.opened,
+                rotation: new Vector3(0, 0, Random.Range(0, 360)));
             LastTouchedCard = null;
+            cardOrderInLayer++;
         }
         else
         {
