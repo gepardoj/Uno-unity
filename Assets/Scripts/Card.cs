@@ -52,7 +52,11 @@ public class Card : MonoBehaviour
     public SuitValue? Value => _value;
     public OtherCards? Other => _other;
     public CardState State => _state;
-    public Sprite Sprite => _sprite;
+    public Sprite Sprite
+    {
+        get => _sprite;
+        set => _sprite = value;
+    }
     public FadeRenderer Glow => _glow;
 
     public bool IsColoredAction

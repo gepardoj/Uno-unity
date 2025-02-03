@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Uno.sln"
+    "dotnet.defaultSolution": "Uno.sln",
+    "dotnet.preferCSharpExtension": true
 }

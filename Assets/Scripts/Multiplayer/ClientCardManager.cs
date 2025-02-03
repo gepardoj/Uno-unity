@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class ClientCardManager : AbstractCardManager
 {
-    private int cardOrderInLayer = 0;
 #nullable enable
     public Card? LastTouchedCard { get; set; }
 #nullable disable
@@ -15,10 +14,7 @@ public class ClientCardManager : AbstractCardManager
 
     public void CreateCardAndAddToDiscardPile(CardData cardValues)
     {
-        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened,
-            rotation: new Vector3(0, 0, Random.Range(0, 360)),
-            cardOrderInLayer);
-        cardOrderInLayer++;
+        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(90, 0, Random.Range(0, 360)));
     }
 
     public void MoveCardFromPlayerToDiscardPile(PlayerData player, CardData cardData)
@@ -26,17 +22,14 @@ public class ClientCardManager : AbstractCardManager
         if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player))
         {
             Utils.RemoveAndGetElement(player.Cards, LastTouchedCard);
-            LastTouchedCard.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer;
-            MoveCardsTo(null, _discardPile, new Card[] { LastTouchedCard }, CardState.opened,
-                rotation: new Vector3(0, 0, Random.Range(0, 360)));
+            MoveCardsToDiscardPile(new Card[] { LastTouchedCard });
             LastTouchedCard = null;
-            cardOrderInLayer++;
         }
-        else
+        else // for remote player
         {
             var removedCard = Utils.RemoveAndGetFirstNElements(player.Cards, 1);  // doesnt matter which card to remove as they all the same (in client unity game)
-            Destroy(removedCard[0].gameObject);
-            CreateCardAndAddToDiscardPile(cardData);
+            removedCard[0].Sprite = GetSpriteInCardsDef(cardData.Type, cardData.Color, cardData.Value, cardData.Other);
+            MoveCardsToDiscardPile(removedCard);
         }
     }
 

@@ -124,6 +124,7 @@ GameObject:
   - component: {fileID: 9168561009498578206}
   - component: {fileID: 8033640562601517546}
   - component: {fileID: 1762867146772089314}
+  - component: {fileID: 6872704636645007685}
   m_Layer: 0
   m_Name: Card Sprite Prefab
   m_TagString: Untagged
@@ -140,7 +141,7 @@ RectTransform:
   m_GameObject: {fileID: 6576589297527225733}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.04, y: 0.06, z: 1}
+  m_LocalScale: {x: 0.2, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9080572267042407750}
@@ -237,3 +238,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.8591125, y: 1.330001, z: 0.0052339733}
   m_Center: {x: -0.0045563094, y: 0, z: 0.00094675506}
+--- !u!114 &6872704636645007685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6576589297527225733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a0c9cf4611a1ae4fb33c54e2bfc6f9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 0}
+  _speed: 0.1

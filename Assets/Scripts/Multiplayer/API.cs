@@ -28,6 +28,7 @@ enum PlayerFinalCondition { WIN, DEFEAT };
 
 public class API : MonoBehaviour
 {
+    public Card specialCard;
     // just need to be aware when to use, do not mess with data
     public static readonly byte BYTE_NULL = 255;
     public static readonly byte BYTE_SEPARATOR = 254;
@@ -165,7 +166,6 @@ public class API : MonoBehaviour
         var players = ParsePlayersInfo(data[1..]);
         if (players.Length < 2) throw new Exception("The're should be at least two players");
         MultiplayerGame.Instance.PlayerManager.Player.Id = players[0].Id;
-        //MultiplayerGame.Instance.PlayerManager.Player.Avatar.SetSprite(MultiplayerGame.Instance.PlayerManager.PlayerAvatars[players[0].Number]);
         foreach (var player in players[1..]) MultiplayerGame.Instance.PlayerManager.AddPlayer(player.Id, player.Number);
         _isGameStarted = true;
     }
@@ -209,13 +209,13 @@ public class API : MonoBehaviour
             var card = GetCardByOffset(data, 2 + id.Length + 1);
             var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
             MultiplayerGame.Instance.CardManager.MoveCardFromPlayerToDiscardPile(player, card);
+            MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
         }
-        else
+        else // it's the first card of game
         {
             var card = GetCardByOffset(data, 2);
             MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(card);
         }
-        MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
     }
 
     // only for local player
