@@ -10,15 +10,27 @@ public class MyCardsHolder : MonoBehaviour
         set => _canClick = value;
     }
 
-    public void OnSelectCard(Card card)
+    void Update()
     {
-        if (Scene.IsMultiplayer)
+        if (Input.GetMouseButtonDown(0))
         {
-            MultiplayerGame.Instance.OnSelectCard(card);
-        }
-        else if (CanClick)
-        {
-            GameMaster.Instance.PlayerManager.OnChooseCard(card);
+            var hits = Physics.RaycastAll(Camera.main.ScreenPointToRay(Input.mousePosition));
+            Card highestOrderCard = null;
+            foreach (var hit in hits)
+            {
+                Card card;
+                if (card = hit.collider.gameObject.GetComponent<Card>())
+                {
+                    if (highestOrderCard == null) highestOrderCard = card;
+                    var order = card.GetComponent<SpriteRenderer>().sortingOrder;
+                    if (order > highestOrderCard.GetComponent<SpriteRenderer>().sortingOrder)
+                    {
+                        highestOrderCard = card;
+                    }
+                    // print("hit " + hit.collider.gameObject.name + "" + order);
+                }
+            }
+            if (highestOrderCard) highestOrderCard.OnClick();
         }
     }
 }

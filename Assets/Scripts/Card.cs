@@ -76,12 +76,12 @@ public class Card : MonoBehaviour
         _sprite = sprite;
         _state = state;
         SetStateAndSprite(_state, closedSprite);
+        name = $"Card {type} {color} {value} {other}";
     }
 
-    void OnMouseDown()
+    public void OnClick()
     {
-        var myCardsHolder = transform.parent.GetComponent<MyCardsHolder>();
-        if (myCardsHolder) myCardsHolder.OnSelectCard(this);
+        MultiplayerGame.Instance.OnSelectCard(this);
     }
 
     public void SetStateAndSprite(CardState state, Sprite closedSprite)
