@@ -1,4 +1,6 @@
 using UnityEngine;
+using DG.Tweening;
+
 
 public class ClientCardManager : AbstractCardManager
 {
@@ -7,6 +9,7 @@ public class ClientCardManager : AbstractCardManager
 #nullable disable
 
     public static float GIVE_CARD_DELAY = 0.1f;
+    public static float FIRST_CARD_DELAY = 1f;
 
     // only for local player
     public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData, byte timeToPlayS)
@@ -20,10 +23,14 @@ public class ClientCardManager : AbstractCardManager
 
     public void CreateFirstCard(CardData cardValues)
     {
-        // do animation for the first card
-        CreateCardAndAddTo(cardOrderInLayer == 0 ? _startingCardOrigin : null, null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(90, 0, Random.Range(0, 360)), (card) =>
-        {
 
+        CreateCardAndAddTo(Deck.transform, null, _startingCardOrigin.gameObject, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, Vector3.zero, (card) =>
+        {
+            card.transform.DORotate(Vector3.up * 360, 2, RotateMode.FastBeyond360)
+            .OnComplete(() =>
+                card.GetComponent<MoveTowards>()
+                .MoveTo(DiscardPile.transform, new Vector3(90, 0, Random.Range(0, 360)))
+            );
         });
     }
 

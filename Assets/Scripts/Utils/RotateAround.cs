@@ -15,11 +15,14 @@ public class RotateAround : MonoBehaviour
         children.Remove(GetComponent<RectTransform>());
         float angle = 360.0f / children.Count * _amountOfCircle;
         // print($"{name} children: {children.Count} angle: {angle}");
-        for (var i = 0; i < children.Count; i++)
+        var i = 0;
+        foreach (Transform child in transform)
         {
-            children[i].SetLocalPositionAndRotation(_cardStartingPosition, Quaternion.Euler(Vector3.zero));
-            children[i].RotateAround(transform.position, _rotatonVector, i * angle);
-            if (_lookAtPivot) children[i].LookAt(transform);
+            if (child.parent != transform) return;
+            child.SetLocalPositionAndRotation(_cardStartingPosition, Quaternion.Euler(Vector3.zero));
+            child.RotateAround(transform.position, _rotatonVector, i * angle);
+            if (_lookAtPivot) child.LookAt(transform);
+            i++;
         }
     }
 }

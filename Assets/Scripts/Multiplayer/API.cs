@@ -213,6 +213,7 @@ public class API : MonoBehaviour
         }
         else // it's the first card of game
         {
+            yield return new WaitForSeconds(ClientCardManager.FIRST_CARD_DELAY);
             var card = GetCardByOffset(data, 2);
             MultiplayerGame.Instance.CardManager.CreateFirstCard(card);
         }

@@ -72,7 +72,7 @@ public class AbstractCardManager : MonoBehaviour
         {
             cardsDest?.Add(card);
             card.SetStateAndSprite(state, _closedSprite);
-            card.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer++;
+            card.SetSortingOrder(cardOrderInLayer++);
             card.GetComponent<MoveTowards>().MoveTo(cardsHolder.transform, rotation).onComplete += () =>
             {
                 onFinish(card);

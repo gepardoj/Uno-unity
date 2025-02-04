@@ -45,6 +45,7 @@ public class Card : MonoBehaviour
     private CardState _state;
     private Sprite _sprite;
     [SerializeField] private FadeRenderer _glow;
+    [SerializeField] private SpriteRenderer _backSide;
 
 
     public CardType Type => _type;
@@ -82,6 +83,12 @@ public class Card : MonoBehaviour
     public void OnClick()
     {
         MultiplayerGame.Instance.OnSelectCard(this);
+    }
+
+    public void SetSortingOrder(int sortingOrder)
+    {
+        GetComponent<SpriteRenderer>().sortingOrder = sortingOrder;
+        _backSide.sortingOrder = sortingOrder;
     }
 
     public void SetStateAndSprite(CardState state, Sprite closedSprite)

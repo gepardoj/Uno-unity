@@ -24,9 +24,15 @@ public class PlaceInRow : MonoBehaviour
         var i = 0;
         foreach (Transform child in transform)
         {
-            print(child.name);
-            child.GetComponent<SpriteRenderer>().sortingOrder = i;
-            child.SetLocalPositionAndRotation(_startPosition + step * i, Quaternion.Euler(Vector3.zero));
+            if (child.parent != transform) return;
+            var card = child.GetComponent<Card>();
+            if (card)
+            {
+                card.SetSortingOrder(i);
+            }
+            else
+                child.GetComponent<SpriteRenderer>().sortingOrder = i;
+            child.SetLocalPositionAndRotation(_startPosition + step * i, Quaternion.identity);
             i++;
         }
     }
