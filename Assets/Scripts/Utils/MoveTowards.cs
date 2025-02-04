@@ -7,7 +7,7 @@ public class MoveTowards : MonoBehaviour
     public Tween MoveTo(Transform target, Vector3 rotation)
     {
         var temp = transform.position;
-        transform.SetParent(null, true);
+        transform.SetParent(null, false);
         transform.position = temp;
         transform.DORotate(rotation, duration, RotateMode.Fast);
         return transform.DOMove(target.position, duration).OnComplete(() => transform.SetParent(target));

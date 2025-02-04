@@ -214,7 +214,7 @@ public class API : MonoBehaviour
         else // it's the first card of game
         {
             var card = GetCardByOffset(data, 2);
-            MultiplayerGame.Instance.CardManager.CreateCardAndAddToDiscardPile(card);
+            MultiplayerGame.Instance.CardManager.CreateFirstCard(card);
         }
     }
 
@@ -230,8 +230,8 @@ public class API : MonoBehaviour
         foreach (var card in cards)
         {
             MultiplayerGame.Instance.CardManager.CreateCardAndAddToPlayer(player, card, timeToPlayS);
+            yield return new WaitForSeconds(ClientCardManager.GIVE_CARD_DELAY);
         }
-        MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
         if (timeToPlayS > 0) MultiplayerGame.Instance.TimeSlider.Play(timeToPlayS);
     }
 
@@ -244,8 +244,11 @@ public class API : MonoBehaviour
             var player = MultiplayerGame.Instance.PlayerManager.GetPlayerById(id);
             if (sign == '+')
             {
-                print("Creating fake card");
-                foreach (var _ in Enumerable.Range(1, cardsNumber)) MultiplayerGame.Instance.CardManager.CreateFakeCard(player);
+                foreach (var _ in Enumerable.Range(1, cardsNumber))
+                {
+                    MultiplayerGame.Instance.CardManager.CreateFakeCard(player);
+                    yield return new WaitForSeconds(ClientCardManager.GIVE_CARD_DELAY);
+                }
             }
             else throw new Exception("Unknow sign operator");
         }
@@ -276,7 +279,6 @@ public class API : MonoBehaviour
         while (!_isGameStarted) yield return null;
         var colorPicker = MultiplayerGame.Instance.CardManager.ColorPicker;
         colorPicker.SetActive(true);
-        colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
     }
 
     IEnumerator OnCurrentColor(byte[] data)

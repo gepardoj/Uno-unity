@@ -6,15 +6,25 @@ public class ClientCardManager : AbstractCardManager
     public Card? LastTouchedCard { get; set; }
 #nullable disable
 
+    public static float GIVE_CARD_DELAY = 0.1f;
+
+    // only for local player
     public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData, byte timeToPlayS)
     {
-        var cards = CreateCardAndAddTo(player.Cards, player.CardsHolder, cardData.Type, cardData.Color, cardData.Value, cardData.Other, cardData.State);
+        var cards = CreateCardAndAddTo(Deck.transform, player.Cards, player.CardsHolder, cardData.Type, cardData.Color, cardData.Value, cardData.Other, cardData.State, Vector3.zero, (card) =>
+        {
+            MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
+        });
         if (timeToPlayS > 0) foreach (var _ in cards) _.Glow.Play(timeToPlayS);
     }
 
-    public void CreateCardAndAddToDiscardPile(CardData cardValues)
+    public void CreateFirstCard(CardData cardValues)
     {
-        CreateCardAndAddTo(null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(90, 0, Random.Range(0, 360)));
+        // do animation for the first card
+        CreateCardAndAddTo(cardOrderInLayer == 0 ? _startingCardOrigin : null, null, _discardPile, cardValues.Type, cardValues.Color, cardValues.Value, cardValues.Other, CardState.opened, new Vector3(90, 0, Random.Range(0, 360)), (card) =>
+        {
+
+        });
     }
 
     public void MoveCardFromPlayerToDiscardPile(PlayerData player, CardData cardData)
@@ -22,26 +32,29 @@ public class ClientCardManager : AbstractCardManager
         if (MultiplayerGame.Instance.PlayerManager.IsLocalPlayer(player))
         {
             Utils.RemoveAndGetElement(player.Cards, LastTouchedCard);
-            MoveCardsToDiscardPile(new Card[] { LastTouchedCard });
+            MoveCardsToDiscardPile(new Card[] { LastTouchedCard }, (card) =>
+            {
+                MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
+            });
             LastTouchedCard = null;
         }
         else // for remote player
         {
             var removedCard = Utils.RemoveAndGetFirstNElements(player.Cards, 1);  // doesnt matter which card to remove as they all the same (in client unity game)
             removedCard[0].Sprite = GetSpriteInCardsDef(cardData.Type, cardData.Color, cardData.Value, cardData.Other);
-            MoveCardsToDiscardPile(removedCard);
+            MoveCardsToDiscardPile(removedCard, (card) =>
+            {
+
+            });
         }
     }
 
-    // for other players
+    // for remote player
     public void CreateFakeCard(PlayerData player)
     {
-        CreateCardAndAddTo(player.Cards, player.CardsHolder, CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed);
-    }
-
-    public void RemoveFakeCard(PlayerData player)
-    {
-        Destroy(player.Cards[0].gameObject);
-        player.Cards.RemoveAt(0);
+        CreateCardAndAddTo(Deck.transform, player.Cards, player.CardsHolder, CardType.suit, SuitColor.red, SuitValue._0, null, CardState.closed, Vector3.zero, (card) =>
+        {
+            player.CardsHolder.GetComponent<RotateAround>().PlaceObjectsAround();
+        });
     }
 }

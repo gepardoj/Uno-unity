@@ -59,7 +59,7 @@ public class CardManager : AbstractCardManager
 
     void CreateAndAddCardToDeck(CardType type, SuitColor? color, SuitValue? value, OtherCards? other)
     {
-        CreateCardAndAddTo(_availableCards, gameObject, type, color, value, other, CardState.closed);
+        // CreateCardAndAddTo(_availableCards, gameObject, type, color, value, other, CardState.closed);
     }
 
     List<Card> ShuffleCards(List<Card> cards)

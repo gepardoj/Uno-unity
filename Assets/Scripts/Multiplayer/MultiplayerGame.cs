@@ -41,7 +41,6 @@ public class MultiplayerGame : MonoBehaviour
         {
             var colorPicker = CardManager.ColorPicker;
             colorPicker.SetActive(true);
-            colorPicker.GetComponent<RotateAround>().PlaceObjectsAround();
             void action(SuitColor color)
             {
                 Connection.Instance.SendPlayCard(card, color);
@@ -52,6 +51,7 @@ public class MultiplayerGame : MonoBehaviour
         }
         else
         {
+            CardManager.ColorPicker.SetActive(false);
             Connection.Instance.SendPlayCard(card, null);
         }
     }

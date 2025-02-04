@@ -14,7 +14,7 @@ public class AbstractCardManager : MonoBehaviour
     private static readonly int SUIT_CARDS_DEF_N = SUIT_COLORS_N * SUIT_VALUES_N;
     private static readonly int OTHER_CARDS_DEF_N = 2;
 
-    private int cardOrderInLayer = 0;
+    protected int cardOrderInLayer = 0;
 
     [SerializeField, RequiredMember] protected SuitCard[] _suitCardsDef;
     [SerializeField, RequiredMember] protected OtherCard[] _otherCardsDef;
@@ -49,45 +49,35 @@ public class AbstractCardManager : MonoBehaviour
             throw new Exception($"Other cards definitions should be {OTHER_CARDS_DEF_N}");
     }
 
-    protected IEnumerable<Card> CreateCardAndAddTo([Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation)
+    protected IEnumerable<Card> CreateCardAndAddTo(Transform fromOrigin, [Optional] List<Card> cardsDest, GameObject cardsHolder, CardType type, SuitColor? color, SuitValue? value, OtherCards? other, CardState state, [Optional] Vector3 rotation, Action<Card> onFinish)
     {
-        var card = Instantiate(_cardPrefab, cardOrderInLayer == 0 ? _startingCardOrigin : null);
+        var card = Instantiate(_cardPrefab, fromOrigin);
         card.Init(type, color, value, other, state, GetSpriteInCardsDef(type, color, value, other), _closedSprite);
-        return MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation);
+        return MoveCardsTo(cardsDest, cardsHolder, new Card[] { card }, state, rotation, onFinish);
     }
 
-    protected IEnumerable<Card> MoveCardsToDiscardPile(IEnumerable<Card> cards)
+    protected IEnumerable<Card> MoveCardsToDiscardPile(IEnumerable<Card> cards, Action<Card> onFinish)
     {
         return MoveCardsTo(null, _discardPile, cards, CardState.opened,
-        new Vector3(90, 0, UnityEngine.Random.Range(0, 360)));
+        new Vector3(90, 0, UnityEngine.Random.Range(0, 360)), onFinish);
     }
 
     /// <summary>
     /// Does not remove cards from source
     /// </summary>
     protected IEnumerable<Card> MoveCardsTo([Optional] List<Card> cardsDest, GameObject cardsHolder, IEnumerable<Card> newCards, CardState state,
-      [Optional] Vector3 rotation)
+      [Optional] Vector3 rotation, [Optional] Action<Card> onFinish)
     {
         foreach (var card in newCards)
         {
             cardsDest?.Add(card);
             card.SetStateAndSprite(state, _closedSprite);
-            if (cardsHolder == DiscardPile)
+            card.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer++;
+            card.GetComponent<MoveTowards>().MoveTo(cardsHolder.transform, rotation).onComplete += () =>
             {
-                card.GetComponent<SpriteRenderer>().sortingOrder = cardOrderInLayer++;
-                card.GetComponent<MoveTowards>().MoveTo(cardsHolder.transform, rotation).onComplete += () =>
-                {
-                    MultiplayerGame.Instance.PlayerManager.Player.CardsHolder.GetComponent<PlaceInRow>().Place();
-                };
-            }
-            else
-            {
-                card.transform.SetParent(cardsHolder.transform, false);
-                card.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.Euler(rotation));
-            }
+                onFinish(card);
+            };
         }
-        var rotateAround = cardsHolder.GetComponent<RotateAround>();
-        if (rotateAround) rotateAround.PlaceObjectsAround();
         return newCards;
     }
 
