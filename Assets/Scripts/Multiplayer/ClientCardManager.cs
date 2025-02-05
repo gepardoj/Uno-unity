@@ -10,6 +10,7 @@ public class ClientCardManager : AbstractCardManager
 
     public static float GIVE_CARD_DELAY = 0.1f;
     public static float FIRST_CARD_DELAY = 1f;
+    public static float CARD_SPEED = 0.5f;
 
     // only for local player
     public void CreateCardAndAddToPlayer(PlayerData player, CardData cardData, byte timeToPlayS)
@@ -29,7 +30,7 @@ public class ClientCardManager : AbstractCardManager
             card.transform.DORotate(Vector3.up * 360, 2, RotateMode.FastBeyond360)
             .OnComplete(() =>
                 card.GetComponent<MoveTowards>()
-                .MoveTo(DiscardPile.transform, new Vector3(90, 0, Random.Range(0, 360)))
+                .MoveTo(DiscardPile.transform, new Vector3(90, 0, Random.Range(0, 360))).onComplete += () => card.FloatTopCard(DiscardPile.transform)
             );
         });
     }

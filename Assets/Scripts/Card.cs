@@ -91,6 +91,17 @@ public class Card : MonoBehaviour
         _backSide.sortingOrder = sortingOrder;
     }
 
+    public void FloatTopCard(Transform origin)
+    {
+        foreach (var card in origin.GetComponentsInChildren<Card>())
+        {
+            card.GetComponent<Floating>().enabled = false;
+            card.transform.localPosition = Vector3.zero;
+        }
+        GetComponent<Floating>().enabled = true;
+        transform.localPosition = Vector3.up * 0.1f;
+    }
+
     public void SetStateAndSprite(CardState state, Sprite closedSprite)
     {
         _state = state;

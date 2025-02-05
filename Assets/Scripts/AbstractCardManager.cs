@@ -76,6 +76,8 @@ public class AbstractCardManager : MonoBehaviour
             card.GetComponent<MoveTowards>().MoveTo(cardsHolder.transform, rotation).onComplete += () =>
             {
                 onFinish(card);
+                if (cardsHolder == DiscardPile)
+                    card.FloatTopCard(DiscardPile.transform);
             };
         }
         return newCards;
